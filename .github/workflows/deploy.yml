@@ -24,15 +24,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Build Zola site
-        uses: getzola/github-pages@v0.4.0
-        env:
-          BUILD_ONLY: true
-
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Build Zola site and upload Pages artifact
+        uses: getzola/github-pages@v1
         with:
-          path: public
+          zola_version: v0.22.1
 
   deploy:
     environment:
