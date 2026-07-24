@@ -1,0 +1,11 @@
+# Go, Make, Ready Zola Configuration
+
+base_url = "https://gomakeready.com"
+title = "Go, Make, Ready — practical AI, set up by hand"
+description = "Readiness isn't the bar you clear before you begin — it's where you arrive. One hour on how your business actually runs, then Claude wired into the exact places it's slow."
+
+# Build a clean static site
+compile_sass = false
+build_search_index = false
+
+

@@ -1,0 +1,220 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% set shift = get_page(path="shift.md") %}
+{% set how = get_page(path="how-it-goes.md") %}
+{% set what = get_page(path="what-changes.md") %}
+{% set who = get_page(path="who.md") %}
+{% set engagement = get_page(path="engagement.md") %}
+{% set faq = get_page(path="faq.md") %}
+
+<main id="top">
+  <!-- Hero Section -->
+  <div class="wrap">
+    <section class="hero" style="border-top:0;margin-top:0">
+      <svg class="regmark" viewBox="0 0 40 40" aria-hidden="true">
+        <circle cx="20" cy="20" r="12.5" fill="none" stroke="#7d4060" stroke-width="1"/>
+        <line x1="20" y1="1" x2="20" y2="39" stroke="#7d4060" stroke-width="1"/>
+        <line x1="1" y1="20" x2="39" y2="20" stroke="#7d4060" stroke-width="1"/>
+      </svg>
+      <h1 class="giant">
+        <span>Go<span class="c">,</span></span>
+        <span>make<span class="c">,</span></span>
+        <span>ready<span class="c">.</span></span>
+      </h1>
+      <div class="herogrid">
+        <div>
+          <div class="eyebrow">{{ home.extra.hero_offer_title }} <span class="d">·</span> 01</div>
+          <p>{{ config.description }}</p>
+          <a href="#book" class="cta">Start with an hour</a>
+        </div>
+        <div>
+          <div class="eyebrow">{{ home.extra.hero_credential_title }} <span class="d">·</span> 02</div>
+          <p>{{ home.extra.hero_credential_text }}</p>
+          <a href="#shift" class="cta ghost">Why now</a>
+        </div>
+      </div>
+      <div class="herofoot">
+        {% for loc in home.extra.locations %}
+          <div>{{ loc }}</div>
+        {% endfor %}
+        <div style="color:var(--plum)">{{ home.extra.remote_note }}</div>
+      </div>
+    </section>
+  </div>
+
+  <!-- The Shift Section -->
+  <div class="wrap">
+    <section id="shift" class="shift">
+      <div class="sechead">
+        <div class="eyebrow">The shift</div>
+        <h2>{{ shift.title | safe }}</h2>
+      </div>
+      <div class="shiftbody">
+        <div></div>
+        <div>
+          {% for p in shift.extra.col1 %}
+            <p>{{ p | safe }}</p>
+          {% endfor %}
+        </div>
+        <div>
+          {% for p in shift.extra.col2 %}
+            <p>{{ p | safe }}</p>
+          {% endfor %}
+        </div>
+        <div class="pull">
+          <p>{{ shift.extra.pullquote | safe }}</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- How It Goes Section -->
+  <div class="wrap">
+    <section id="how">
+      <div class="sechead">
+        <div class="eyebrow">How it goes</div>
+        <h2>{{ how.title | safe }}</h2>
+      </div>
+      <div class="steps">
+        {% for step in how.extra.steps %}
+          <div class="st">
+            <div class="num">{{ step.num }}</div>
+            <h3>{{ step.title }}</h3>
+            <p>{{ step.desc }}</p>
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+  </div>
+
+  <!-- Monday Section -->
+  <div class="wrap">
+    <section id="monday" class="monday">
+      <div class="sechead">
+        <div class="eyebrow">What changes</div>
+        <h2>{{ what.title | safe }}</h2>
+      </div>
+      <div class="tabs" role="tablist" aria-label="Choose a trade">
+        <button role="tab" aria-selected="true" data-k="gallery">Gallery</button>
+        <button role="tab" aria-selected="false" data-k="design">Design studio</button>
+        <button role="tab" aria-selected="false" data-k="arch">Architecture</button>
+        <button role="tab" aria-selected="false" data-k="re">Real estate</button>
+        <button role="tab" aria-selected="false" data-k="out">Outfitter</button>
+      </div>
+      <div class="ledger">
+        <div class="led">
+          <div class="k">What eats the week</div>
+          <ul id="before"></ul>
+        </div>
+        <div class="led">
+          <div class="k">What it becomes</div>
+          <ul id="after"></ul>
+          <div class="hours">
+            <div class="n" id="hrs">4–6</div>
+            <div class="l">hours returned in a typical week</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Who Section -->
+  <div class="wrap">
+    <section id="who">
+      <div class="who">
+        <div class="eyebrow">{{ who.title }}</div>
+        <div>
+          <div class="tags">
+            {% for tag in who.extra.tags %}
+              <span class="tag">{{ tag }}</span>
+            {% endfor %}
+            <span class="tag off">{{ who.extra.tag_off }}</span>
+          </div>
+        </div>
+        <div class="whonote">
+          {{ who.content | safe }}
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Engagement Section -->
+  <div class="wrap">
+    <section id="engagement" class="eng">
+      <div class="sechead">
+        <div class="eyebrow">Working together</div>
+        <h2>{{ engagement.title | safe }}</h2>
+      </div>
+      <div class="plans">
+        {% for plan in engagement.extra.plans %}
+          <div class="plan {% if plan.featured | default(value=false) %}feature{% endif %}">
+            <div class="pk">{{ plan.pk }}</div>
+            <h3>{{ plan.title }}</h3>
+            <p class="price">{{ plan.price }} <small>— {{ plan.price_suffix }}</small></p>
+            <p>{{ plan.desc }}</p>
+            <ul>
+              {% for feat in plan.features %}
+                <li>{{ feat }}</li>
+              {% endfor %}
+            </ul>
+            <div class="fill"></div>
+            <a href="{{ plan.cta_link }}">{{ plan.cta_text }}</a>
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+  </div>
+
+  <!-- FAQ Section -->
+  <div class="wrap">
+    <section id="faq">
+      <div class="faq">
+        <div class="eyebrow">{{ faq.title }}</div>
+        <div class="qs">
+          {% for item in faq.extra.faqs %}
+            <details {% if loop.first %}open{% endif %}>
+              <summary>{{ item.q }}</summary>
+              <p>{{ item.a }}</p>
+            </details>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Call to Action (Say Hello) -->
+  <section id="book" class="close">
+    <div class="wrap">
+      <div class="eyebrow">Say hello <span class="d">·</span> 03</div>
+      <h2>{{ home.extra.book_title | safe }}</h2>
+      <p>{{ home.extra.book_desc | safe }}</p>
+      <a href="mailto:{{ home.extra.email }}" class="cta">{{ home.extra.email }}</a>
+      <div class="meta">{{ home.extra.book_meta }}</div>
+    </div>
+  </section>
+</main>
+
+<script>
+const DATA = {{ what.extra.ledger | json_encode | safe }};
+const before = document.getElementById('before'), after = document.getElementById('after'), hrs = document.getElementById('hrs');
+
+function render(k) {
+  const d = DATA[k];
+  before.innerHTML = d.before.map(x => `<li>${x}</li>`).join('');
+  after.innerHTML = d.after.map(x => `<li>${x}</li>`).join('');
+  hrs.textContent = d.h;
+  [before, after].forEach(el => { el.classList.remove('fade'); void el.offsetWidth; el.classList.add('fade') });
+}
+
+document.querySelectorAll('.tabs button').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.tabs button').forEach(x => x.setAttribute('aria-selected', 'false'));
+    b.setAttribute('aria-selected', 'true');
+    render(b.dataset.k);
+  });
+});
+
+render('gallery');
+</script>
+{% endblock content %}

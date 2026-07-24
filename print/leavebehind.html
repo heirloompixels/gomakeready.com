@@ -1,0 +1,195 @@
+<meta charset="utf-8">
+<style>
+@font-face{font-family:'EBG';src:url('fonts/EBGaramond.ttf');font-weight:400 700;font-style:normal}
+@font-face{font-family:'EBG';src:url('fonts/EBGaramond-Italic.ttf');font-weight:400 700;font-style:italic}
+@font-face{font-family:'DMS';src:url('fonts/DMSans.ttf');font-weight:400 700;font-style:normal}
+
+@page{size:5.5in 8.5in;margin:0}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:5.5in}
+
+:root{
+  --ink:#0d1f29;      /* prussian — ink 1 */
+  --plum:#7d4060;     /* plum — ink 2 */
+  --paper:#ffffff;
+}
+
+.page{width:5.5in;height:8.5in;page-break-after:always;position:relative;
+  background:var(--paper);padding:0.62in 0.58in 0.5in;color:var(--ink)}
+.page:last-child{page-break-after:avoid}
+
+/* ---------------- FRONT ---------------- */
+.rule{height:1.6pt;background:var(--ink);width:100%}
+.rule.thin{height:.5pt;background:var(--ink)}
+.rule.plum{background:var(--plum)}
+
+.kicker{font-family:'DMS',sans-serif;font-size:6.6pt;font-weight:700;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--plum);margin:9pt 0 0}
+
+.wordmark{font-family:'EBG',serif;font-weight:600;font-size:52pt;line-height:.93;
+  letter-spacing:-.012em;margin:26pt 0 0;color:var(--ink)}
+.wordmark .p{color:var(--plum)}
+
+.lede{font-family:'EBG',serif;font-size:13.4pt;line-height:1.44;margin:22pt 0 0;
+  color:var(--ink);max-width:3.9in}
+.lede em{font-style:italic;color:var(--plum)}
+
+.reg{position:absolute;right:.44in;top:.5in;width:24pt;height:24pt}
+
+.steps{margin:30pt 0 0}
+.step{display:flex;gap:11pt;padding:9.5pt 0;border-top:.5pt solid var(--ink)}
+.step:last-child{border-bottom:.5pt solid var(--ink)}
+.step .n{font-family:'DMS',sans-serif;font-size:6.4pt;font-weight:700;letter-spacing:.16em;
+  color:var(--plum);text-transform:uppercase;width:52pt;padding-top:3pt;flex:0 0 52pt}
+.step .b h3{font-family:'EBG',serif;font-size:14pt;font-weight:600;margin:0 0 2pt}
+.step .b p{font-family:'DMS',sans-serif;font-size:8.1pt;line-height:1.5;color:var(--ink)}
+
+.frontfoot{position:absolute;left:.58in;right:.58in;bottom:.5in}
+.frontfoot .line{font-family:'DMS',sans-serif;font-size:7pt;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink);display:flex;justify-content:space-between;
+  padding-top:7pt}
+.frontfoot .line span:last-child{color:var(--plum)}
+
+/* ---------------- BACK ---------------- */
+.backhead{font-family:'DMS',sans-serif;font-size:6.6pt;font-weight:700;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--plum)}
+.backtitle{font-family:'EBG',serif;font-size:23pt;font-weight:600;line-height:1.1;
+  margin:12pt 0 0;letter-spacing:-.005em}
+.backtitle em{font-style:italic;color:var(--plum)}
+
+.ledger{margin:20pt 0 0}
+.lrow{display:grid;grid-template-columns:1fr 12pt 1fr;gap:0;align-items:start;
+  padding:7.4pt 0;border-top:.5pt solid var(--ink)}
+.lrow:last-of-type{border-bottom:.5pt solid var(--ink)}
+.lrow .a{font-family:'DMS',sans-serif;font-size:7.9pt;line-height:1.42;color:var(--ink);
+  padding-right:8pt}
+.lrow .arrow{font-family:'DMS',sans-serif;font-size:8pt;color:var(--plum);text-align:center;
+  padding-top:.5pt}
+.lrow .b{font-family:'EBG',serif;font-size:9.6pt;line-height:1.42;color:var(--ink);
+  padding-left:2pt;font-weight:500}
+.lhead{display:grid;grid-template-columns:1fr 12pt 1fr;padding-bottom:5pt}
+.lhead div{font-family:'DMS',sans-serif;font-size:6.2pt;font-weight:700;letter-spacing:.16em;
+  text-transform:uppercase}
+.lhead .h1{color:var(--ink)}
+.lhead .h2{color:var(--plum);padding-left:2pt}
+
+.creed{margin:22pt 0 0;padding:13pt 0 0;border-top:1.6pt solid var(--ink)}
+.creed p{font-family:'EBG',serif;font-style:italic;font-size:11.4pt;line-height:1.42;
+  color:var(--ink)}
+.creed p .p{font-style:normal;color:var(--plum)}
+
+.card{position:absolute;left:.58in;right:.58in;bottom:.5in}
+.card .rule2{height:1.6pt;background:var(--plum);margin-bottom:11pt}
+.card .name{font-family:'EBG',serif;font-size:15pt;font-weight:600;letter-spacing:-.005em}
+.card .role{font-family:'DMS',sans-serif;font-size:7.2pt;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--plum);margin-top:3pt}
+.card .contact{font-family:'DMS',sans-serif;font-size:8.2pt;line-height:1.62;
+  margin-top:9pt;color:var(--ink)}
+.card .contact .u{color:var(--plum);font-weight:700}
+.card .colophon{font-family:'DMS',sans-serif;font-size:5.9pt;line-height:1.5;
+  letter-spacing:.05em;color:var(--ink);margin-top:12pt;padding-top:6pt;
+  border-top:.5pt solid var(--ink);text-transform:uppercase}
+</style>
+
+<!-- ===================== FRONT ===================== -->
+<div class="page">
+  <div class="rule"></div>
+  <div class="kicker">Practical AI &nbsp;·&nbsp; set up by hand</div>
+
+  <svg class="reg" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="7.5" fill="none" stroke="#7d4060" stroke-width=".8"/>
+    <line x1="12" y1="0" x2="12" y2="24" stroke="#7d4060" stroke-width=".8"/>
+    <line x1="0" y1="12" x2="24" y2="12" stroke="#7d4060" stroke-width=".8"/>
+  </svg>
+
+  <h1 class="wordmark">Go<span class="p">,</span><br>make<span class="p">,</span><br>ready<span class="p">.</span></h1>
+
+  <p class="lede">Readiness isn't the bar you clear before you begin. It's where you <em>arrive</em>. Give me an hour with the way your business actually runs, and I'll hand you back a piece of every week that follows.</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="n">First</div>
+      <div class="b">
+        <h3>We sit down</h3>
+        <p>An hour on how your work truly moves — the parts you dread, the writing around the work, the friction you stopped noticing years ago.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="n">Then</div>
+      <div class="b">
+        <h3>I make it ready</h3>
+        <p>Claude, wired into those exact places, by hand, around your operation. Your voice and judgment kept entirely. The tedium removed.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="n">After</div>
+      <div class="b">
+        <h3>It runs</h3>
+        <p>Nothing to babysit, no subscription of mine, no lock-in. You simply keep the hours it gives back, every week, after I've gone.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="frontfoot">
+    <div class="rule thin"></div>
+    <div class="line"><span>Bozeman · Santa&nbsp;Fe · Vail · Aspen</span><span>gomakeready.com</span></div>
+  </div>
+</div>
+
+<!-- ===================== BACK ===================== -->
+<div class="page">
+  <div class="rule plum"></div>
+  <div class="backhead" style="margin-top:9pt">What changes</div>
+  <h2 class="backtitle">What your <em>Monday</em><br>looks like after.</h2>
+
+  <div class="ledger">
+    <div class="lhead">
+      <div class="h1">What eats the week</div><div></div><div class="h2">What it becomes</div>
+    </div>
+
+    <div class="lrow">
+      <div class="a">The press release for every opening, written from nothing</div>
+      <div class="arrow">→</div>
+      <div class="b">Drafted from your show notes, in your own voice</div>
+    </div>
+    <div class="lrow">
+      <div class="a">Proposals and spec documents, rebuilt each time</div>
+      <div class="arrow">→</div>
+      <div class="b">Assembled from the brief in minutes, then edited</div>
+    </div>
+    <div class="lrow">
+      <div class="a">Collector and client follow-up that quietly slips</div>
+      <div class="arrow">→</div>
+      <div class="b">Everyone answered within a day, personally</div>
+    </div>
+    <div class="lrow">
+      <div class="a">The monthly report nobody wants to write</div>
+      <div class="arrow">→</div>
+      <div class="b">Generated from your own data, ready to sign</div>
+    </div>
+    <div class="lrow">
+      <div class="a">Trip reports and updates written at midnight</div>
+      <div class="arrow">→</div>
+      <div class="b">Assembled from your field notes before dinner</div>
+    </div>
+  </div>
+
+  <div class="creed">
+    <p>I ran Unix systems and built the web in the nineties, when being early was a superpower. This is that same morning again, only larger — and I know where to put my hands. <span class="p">No jargon. No hype. No lock-in.</span></p>
+  </div>
+
+  <div class="card">
+    <div class="rule2"></div>
+    <div class="name">Kyle Parker Cunningham</div>
+    <div class="role">Go, Make, Ready</div>
+    <div class="contact">
+      <span class="u">gomakeready.com</span><br>
+      kyle@gomakeready.com<br>
+      Remote, with occasional coffee.
+    </div>
+    <div class="colophon">
+      Set in EB Garamond &amp; DM Sans · Two inks: Prussian &amp; plum<br>
+      Letterpress · Agile Meteor Press · Truth or Consequences, New Mexico
+    </div>
+  </div>
+</div>
