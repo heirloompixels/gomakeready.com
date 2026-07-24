@@ -13,6 +13,18 @@
       clearance. One hour with a trademark attorney before anything is printed
       or letterpressed. Domain registration confers **no** trademark rights.
 
+## Deploy
+
+- [x] Repo on GitHub (`heirloompixels/gomakeready.com`, public), pushed to `main`.
+- [x] GitHub Actions build + deploy workflow green. Serves at
+      `heirloompixels.github.io/gomakeready.com` until the domain points over.
+- [x] Pages enabled with GitHub Actions as the build source.
+- [ ] Buy `gomakeready.com`, then add DNS: four apex `A` records to the GitHub
+      Pages IPs (+ optional AAAA), `www` CNAME → `heirloompixels.github.io`.
+      See `docs/DEPLOY.md`.
+- [ ] Set the custom domain in **Settings > Pages** and, once DNS propagates,
+      tick **Enforce HTTPS**.
+
 ## Before first client
 
 - [ ] Contact path. Currently `mailto:`. For a referral practice that is
