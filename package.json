@@ -1,0 +1,25 @@
+{
+  "name": "gmr",
+  "private": true,
+  "description": "go, make, ready. — the piece and the practice, one Cloudflare Worker",
+  "type": "module",
+  "packageManager": "pnpm@10.20.0",
+  "scripts": {
+    "dev": "wrangler dev",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "check": "biome check .",
+    "fix": "biome check --write ."
+  },
+  "dependencies": {
+    "hono": "^4.12.32"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.5",
+    "@cloudflare/vitest-pool-workers": "^0.18.8",
+    "@cloudflare/workers-types": "^5.20260721.1",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.10",
+    "wrangler": "^4.113.0"
+  }
+}

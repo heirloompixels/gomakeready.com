@@ -1,0 +1,9 @@
+# gmr is a single standalone package — this file exists only because pnpm 10
+# reads its settings here rather than from package.json. It is deliberately
+# not part of the portals workspace: gmr shares that house's conventions, not
+# its lockfile.
+
+# wrangler's engine deps need their postinstall (native binaries).
+onlyBuiltDependencies:
+  - esbuild
+  - workerd

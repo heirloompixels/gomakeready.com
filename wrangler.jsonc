@@ -1,0 +1,35 @@
+{
+  // gmr — go, make, ready. One Worker serves the piece, the practice, and
+  // the record. Local dev needs no Cloudflare account: wrangler dev is enough
+  // until D1 and the session DO land (docs/TODO.md § 4–5).
+  "name": "gmr",
+  // Pinned so a stray CLOUDFLARE_ACCOUNT_ID or a second logged-in account
+  // can't deploy this somewhere else. Analogkyle's account — gomakeready.com
+  // is assigned there; the default OAuth login points at old snow and gets
+  // it wrong silently (CLAUDE.md § Cloudflare account).
+  "account_id": "e31907b848be2fd0a182757d8c938594",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-07-01",
+  // Workers Logs from day one — the piece is a conversation with a wallet
+  // attached; the logs must already be flowing when the first one starts.
+  "observability": { "enabled": true },
+  // No `routes` yet: gomakeready.com's nameservers are not on this account,
+  // so the Worker serves at gmr.analogkyle.workers.dev until they move.
+  // Static assets — fonts and the client bundle (step 3). The Worker owns
+  // every HTML answer, so neither handling mode may invent a page: a miss
+  // here falls through to the Hono notFound, which answers in the piece's
+  // own voice.
+  "assets": {
+    "binding": "ASSETS",
+    "directory": "./assets",
+    "html_handling": "none",
+    "not_found_handling": "none"
+  },
+  "vars": {
+    // COMMIT is overridden with the real sha at deploy:
+    //   wrangler deploy --var COMMIT:$(git rev-parse --short HEAD)
+    // and reported at /_health, so a live Worker always names the commit it
+    // was cut from (CLAUDE.md § Toolchain).
+    "COMMIT": "dev"
+  }
+}

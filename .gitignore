@@ -1,3 +1,7 @@
 /public/
 *.pdf.bak
 .DS_Store
+node_modules/
+.wrangler/
+dist/
+.dev.vars

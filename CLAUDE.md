@@ -218,10 +218,21 @@ again.*
 ## Running
 
 ```
+make dev             # wrangler dev, localhost:8787 — the Worker
+make typecheck       # tsc --noEmit
+make test            # vitest inside workerd
+make check           # biome + typecheck + test — green before a step is done
+
 make run             # zola serve, localhost:1111 — the old brochure
 make build           # zola build into public/
 make print           # re-render the leave-behind PDF
 ```
 
-(Workers scaffolding will add `wrangler dev` and test targets;
-update this section when it lands.)
+pnpm only. The Worker's static assets live in `assets/` (fonts, the client
+bundle); `public/` stays the Zola build output until the brochure retires.
+
+Deploys are a hand, and they carry the sha:
+
+```
+pnpm wrangler deploy --var COMMIT:$(git rev-parse --short HEAD)
+```

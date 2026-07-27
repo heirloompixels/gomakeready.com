@@ -1,4 +1,24 @@
-.PHONY: run build print clean
+.PHONY: run build print clean dev typecheck test check
+
+# ————— the Workers app (the piece; docs/TODO.md § the build)
+
+# Local Worker at localhost:8787. No Cloudflare account needed.
+dev:
+	pnpm wrangler dev
+
+typecheck:
+	pnpm typecheck
+
+test:
+	pnpm test
+
+# What CI runs, and what must be green before a step is done.
+check:
+	pnpm check
+	pnpm typecheck
+	pnpm test
+
+# ————— the Zola brochure (live until the Worker replaces it)
 
 run:
 	zola serve
