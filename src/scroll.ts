@@ -10,10 +10,15 @@
 // smallnote, where the reader can see it, and as JSON on #edge, which the
 // typist reads. Never concatenated into script — the town is a stranger's
 // word, and strangers' words go in attributes, escaped.
+// The letter act is no longer written here. The scripted letter and the one
+// a real correspondence sets go through one template (src/letter.ts §
+// letterArticle), so the demonstration and the document cannot drift.
 import { html } from 'hono/html';
+import type { Aggregates } from './db';
 import type { Edge } from './greeting';
+import { scriptedLetter } from './letter';
 
-export const scroll = (edge: Edge, engine = false) => html`<!doctype html>
+export const scroll = (edge: Edge, engine = false, record?: Aggregates) => html`<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -83,47 +88,7 @@ export const scroll = (edge: Edge, engine = false) => html`<!doctype html>
   <div class="entry hid" id="act4">
     <div class="rail eyebrow">The letter <span class="d">·</span> III</div>
     <div class="body">
-      <article class="doc">
-        <div class="dochead setin">
-          <div class="t">go<span class="p">,</span> make<span class="p">,</span> ready<span class="p">.</span> — a letter on the hours</div>
-          <div class="d">Nº 052 · Santa Fe</div>
-        </div>
-        <h1 class="setin">Where the hours are hiding at <em>your gallery.</em></h1>
-        <div class="for setin">Set from a short correspondence · a gallery on Canyon Road · the owner answers, evenings</div>
-        <div class="finding setin">
-          <div class="fh"><h2>The provenance letters</h2><div class="hrs">3–4 <small>hrs / week</small></div></div>
-          <p>Collectors ask the same forty questions in different words. Given your artist files
-            and your past answers, the reply drafts itself <b>in your voice</b> — you read it,
-            mend a sentence, send it. The judgment stays yours. The typing doesn't.</p>
-        </div>
-        <div class="finding setin">
-          <div class="fh"><h2>Words for the new work</h2><div class="hrs">2–3 <small>hrs / week</small></div></div>
-          <p>The work arrives, the photographs are made, and the words wait for a quiet
-            evening that doesn't come. From your photographs and a few spoken notes,
-            a draft is waiting <b>before you've locked the door</b>.</p>
-        </div>
-        <div class="finding setin">
-          <div class="fh"><h2>What never gets written</h2><div class="hrs">1–2 <small>hrs / week</small></div></div>
-          <p>You said it plainly. One working hour a week becomes the statements and
-            the announcements, drafted from what actually happened in the room —
-            <b>nothing leaves without your hand on it.</b></p>
-        </div>
-        <div class="total setin">
-          <div class="n">6–9</div>
-          <div class="l">hours a week, sitting in these three alone</div>
-        </div>
-        <div class="finding thesis setin">
-          <p>
-            And under the hours, the larger thing: what you did on this page — asking in
-            your own words, and being met — is the first <b>genuinely new way to use a
-            computer</b> in decades. It is like the internet, but better, and it is that
-            early. The advantage, as before, goes to whoever moves first.</p>
-        </div>
-        <div class="keep setin">
-          This letter is yours whether we ever speak. What you said here joins the record
-          melted down, like old type — recast without your name.
-        </div>
-      </article>
+      ${scriptedLetter()}
     </div>
   </div>
 
@@ -163,7 +128,7 @@ export const scroll = (edge: Edge, engine = false) => html`<!doctype html>
   </div>
 </footer>
 
-<div id="edge" hidden data-edge="${JSON.stringify({ town: edge.town, greeting: edge.greeting, engine })}"></div>
+<div id="edge" hidden data-edge="${JSON.stringify({ town: edge.town, greeting: edge.greeting, engine, record })}"></div>
 <script src="/scroll.js" defer></script>
 </body>
 </html>

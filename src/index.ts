@@ -6,10 +6,14 @@
 // The stylesheets, the fonts and the client hand are static assets, served
 // from this origin and no other.
 import { Hono } from 'hono';
+import { exportArchive } from './archive';
 import { handleAsk } from './ask';
 import { engineOn, handleSession, handleTurn } from './converse';
+import { recordAggregates } from './db';
 import { edgeGreeting, type Where } from './greeting';
 import { guardHeaders } from './headers';
+import { handleLetter } from './letter';
+import { record } from './record';
 import { scroll } from './scroll';
 import type { Env } from './types';
 
@@ -64,8 +68,24 @@ const where = (req: Request): Where | undefined =>
 // key, or past the day's cap, the client runs its scripted bank exactly as it
 // did before step 4 and the visitor is told nothing about wallets.
 app.on(READ, '/', async (c) =>
-  page(await scroll(edgeGreeting(where(c.req.raw)), await engineOn(c.env))),
+  page(
+    await scroll(
+      edgeGreeting(where(c.req.raw)),
+      await engineOn(c.env),
+      await recordAggregates(c.env.DB),
+    ),
+  ),
 );
+
+// The record, in full. Aggregates only — the page cannot print a name
+// because the query cannot select one (src/db.ts § the record). Cached for
+// a minute: it changes once per conversation, and a minute of staleness on
+// a public tally is cheaper than a database read per reader.
+app.on(READ, '/record', async (c) => page(await record(await recordAggregates(c.env.DB))));
+
+// A letter, at its own address, with its own key. Everything that is not a
+// live letter and the right key is a miss like any other (src/letter.ts).
+app.on(READ, '/letter/:number', (c) => handleLetter(c.env, c.req.raw, c.req.param('number')));
 
 // What the Worker knows about itself: that it is up, and which commit it was
 // cut from. `wrangler deploy --var COMMIT:$(git rev-parse --short HEAD)`.
@@ -83,4 +103,16 @@ app.post('/ask', (c) => handleAsk(c.env, c.req.raw));
 app.post('/session', (c) => handleSession(c.env, c.req.raw));
 app.post('/turn', (c) => handleTurn(c.env, c.req.raw));
 
-export default { fetch: app.fetch };
+// ————— the cron
+//
+// Once a day, at a quiet hour, the whole archive is copied to R2
+// (src/archive.ts). No alarm, no polling, no queue: `triggers.crons` in
+// wrangler.jsonc is the event, and this is the handler.
+// Awaited rather than handed to waitUntil: the export is the whole of the
+// job, so the invocation should live exactly as long as it does and its
+// failure should be the invocation's failure.
+const scheduled: ExportedHandlerScheduledHandler<Env> = async (event, env) => {
+  await exportArchive(env, new Date(event.scheduledTime));
+};
+
+export default { fetch: app.fetch, scheduled };

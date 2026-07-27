@@ -83,6 +83,10 @@ export interface LetterRow {
   created_at: number;
   html: string;
   key_hash: string | null;
+  // The same hours the letter prints, as arithmetic (migration 0002). NULL
+  // for a letter set before the record learned to add them up.
+  hours_low: number | null;
+  hours_high: number | null;
 }
 
 // The stored JSON, read back as what it is. A malformed column answers with
@@ -178,6 +182,14 @@ export async function setVisibility(
     .bind(visibility, id)
     .first<ConversationRow>();
 }
+
+// The same act under the name the session calls it by. A conversation that
+// reaches the finale becomes 'public' — the piece told the visitor
+// throughout that what they say joins the record melted down, and the arc
+// reaching its end is the moment that promise is kept. One that stops early
+// stays 'held': it was never offered, so it is never counted. Withdrawal
+// remains a by-hand affair at the desk.
+export const setConversationVisibility = setVisibility;
 
 // ————— events (append-only)
 
@@ -354,6 +366,8 @@ export interface NewLetter {
   conversationId: number;
   html: string;
   keyHash?: string | null;
+  hoursLow?: number | null;
+  hoursHigh?: number | null;
 }
 
 // Letter Nº is dealt the same way event seq is, and for the same reason —
@@ -362,11 +376,17 @@ export interface NewLetter {
 export async function createLetter(db: D1Database, letter: NewLetter): Promise<LetterRow> {
   const row = await db
     .prepare(
-      'INSERT INTO letters (conversation_id, number, html, key_hash)' +
-        ' SELECT ?, COALESCE(MAX(number) + 1, 1), ?, ? FROM letters' +
+      'INSERT INTO letters (conversation_id, number, html, key_hash, hours_low, hours_high)' +
+        ' SELECT ?, COALESCE(MAX(number) + 1, 1), ?, ?, ?, ? FROM letters' +
         ' RETURNING *',
     )
-    .bind(letter.conversationId, letter.html, letter.keyHash ?? null)
+    .bind(
+      letter.conversationId,
+      letter.html,
+      letter.keyHash ?? null,
+      letter.hoursLow ?? null,
+      letter.hoursHigh ?? null,
+    )
     .first<LetterRow>();
   if (!row) throw new Error('the letter would not set');
   return row;
@@ -374,6 +394,13 @@ export async function createLetter(db: D1Database, letter: NewLetter): Promise<L
 
 export async function letterByKeyHash(db: D1Database, keyHash: string): Promise<LetterRow | null> {
   return db.prepare('SELECT * FROM letters WHERE key_hash = ?').bind(keyHash).first<LetterRow>();
+}
+
+// The magic link's other half: the Nº is in the address and the key is not,
+// so the row is found by number and the key is then compared as a hash, in
+// constant time, by the door (src/letter.ts § handleLetter).
+export async function letterByNumber(db: D1Database, number: number): Promise<LetterRow | null> {
+  return db.prepare('SELECT * FROM letters WHERE number = ?').bind(number).first<LetterRow>();
 }
 
 export async function lettersFor(db: D1Database, conversationId: number): Promise<LetterRow[]> {
@@ -399,13 +426,20 @@ export interface Aggregates {
   total: number; // every conversation, whatever its visibility
   byLevel: Record<string, number>; // public only
   byTrade: Record<string, number>; // public only
-  hoursFound: number | null; // null until letters carry hours (step 5b)
+  towns: number; // distinct towns the edge named, public only
+  letters: number; // letters set, counted through public conversations
+  hoursLow: number; // the sum of the letters' low estimates
+  hoursHigh: number; // and of their high ones
 }
 
 export async function recordAggregates(db: D1Database): Promise<Aggregates> {
-  const [totals, levels, trades] = await db.batch<Record<string, unknown>>([
+  const [totals, levels, trades, hours] = await db.batch<Record<string, unknown>>([
+    // `total` is every conversation there has ever been — the piece's own
+    // scale, which belongs to no one. `public` and `towns` speak only for
+    // the conversations that reached the end and were offered.
     db.prepare(
-      "SELECT COUNT(*) AS total, SUM(CASE WHEN visibility = 'public' THEN 1 ELSE 0 END) AS public" +
+      "SELECT COUNT(*) AS total, SUM(CASE WHEN visibility = 'public' THEN 1 ELSE 0 END) AS public," +
+        " COUNT(DISTINCT CASE WHEN visibility = 'public' THEN town END) AS towns" +
         ' FROM conversations',
     ),
     db.prepare(
@@ -416,9 +450,24 @@ export async function recordAggregates(db: D1Database): Promise<Aggregates> {
       "SELECT trade AS k, COUNT(*) AS n FROM conversations WHERE visibility = 'public'" +
         ' AND trade IS NOT NULL GROUP BY trade ORDER BY n DESC, k',
     ),
+    // The hours, joined through the conversation so a withdrawal takes its
+    // letter's hours out of the sum with it. COALESCE because SUM over no
+    // rows is NULL, and the record prints numbers, not absences.
+    db.prepare(
+      'SELECT COUNT(*) AS letters, COALESCE(SUM(l.hours_low), 0) AS low,' +
+        ' COALESCE(SUM(l.hours_high), 0) AS high' +
+        ' FROM letters l JOIN conversations c ON c.id = l.conversation_id' +
+        " WHERE c.visibility = 'public'",
+    ),
   ]);
 
-  const head = totals.results[0] as { total?: number; public?: number | null } | undefined;
+  const head = totals.results[0] as
+    | { total?: number; public?: number | null; towns?: number | null }
+    | undefined;
+  const found = hours.results[0] as
+    | { letters?: number; low?: number | null; high?: number | null }
+    | undefined;
+
   const tally = (rows: Record<string, unknown>[]): Record<string, number> => {
     const out: Record<string, number> = {};
     for (const r of rows) {
@@ -434,8 +483,9 @@ export async function recordAggregates(db: D1Database): Promise<Aggregates> {
     total: head?.total ?? 0,
     byLevel: tally(levels.results),
     byTrade: tally(trades.results),
-    // The letter attaches hours to findings; until it does, the record says
-    // it does not know rather than saying zero.
-    hoursFound: null,
+    towns: head?.towns ?? 0,
+    letters: found?.letters ?? 0,
+    hoursLow: found?.low ?? 0,
+    hoursHigh: found?.high ?? 0,
   };
 }

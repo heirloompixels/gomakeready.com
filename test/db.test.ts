@@ -310,14 +310,17 @@ describe('the letter', () => {
 });
 
 describe('the record', () => {
-  it('is empty before anything is said, and says it does not know the hours', async () => {
+  it('is empty before anything is said, and says so in honest zeros', async () => {
     const r = await recordAggregates(db());
     expect(r).toEqual({
       conversations: 0,
       total: 0,
       byLevel: {},
       byTrade: {},
-      hoursFound: null,
+      towns: 0,
+      letters: 0,
+      hoursLow: 0,
+      hoursHigh: 0,
     });
   });
 
@@ -345,7 +348,9 @@ describe('the record', () => {
     expect(r.total).toBe(4); // the scale of the piece belongs to no one
     expect(r.byLevel).toEqual({ burned: 2 });
     expect(r.byTrade).toEqual({ 'a gallery': 1, 'an outfitter': 1 });
-    expect(r.hoursFound).toBeNull();
+    expect(r.letters).toBe(0);
+    expect(r.hoursLow).toBe(0);
+    expect(r.hoursHigh).toBe(0);
 
     // Withdrawal removes nothing: the work is still in the archive, still
     // numbered, still carrying what it said.

@@ -63,6 +63,24 @@ function wire(text: string, input: number, output: number): string {
   return parts.join('\n');
 }
 
+// The other call. The finale sets a letter (src/letter.ts) with one
+// non-streaming request, so the stub answers anything that is not a stream
+// with copy that validates — the letter itself is examined in
+// test/letter.test.ts; here it only has to not stop the arc.
+const LETTER = {
+  headline: 'Where the hours are hiding at <em>your gallery.</em>',
+  for_line: 'Set from a short correspondence · a gallery · the owner answers, evenings',
+  findings: [
+    { title: 'The letters', hours_low: 3, hours_high: 4, body: 'The same forty questions.' },
+    { title: 'The words', hours_low: 2, hours_high: 3, body: 'Waiting for a quiet evening.' },
+    { title: 'The tellings', hours_low: 1, hours_high: 2, body: 'What never gets written.' },
+  ],
+  total_low: 6,
+  total_high: 9,
+  thesis: 'It is 1996 again, and being early is a working advantage.',
+  keep: 'This letter is yours whether we ever speak.',
+};
+
 const realFetch = globalThis.fetch;
 
 beforeEach(async () => {
@@ -80,7 +98,17 @@ beforeEach(async () => {
       system: string;
       messages: { role: string; content: string }[];
       max_tokens: number;
+      stream?: boolean;
     };
+    if (body.stream !== true) {
+      return new Response(
+        JSON.stringify({
+          content: [{ type: 'text', text: JSON.stringify(LETTER) }],
+          usage: { input_tokens: 900, output_tokens: 300 },
+        }),
+        { headers: { 'content-type': 'application/json' } },
+      );
+    }
     const call: Call = {
       system: body.system,
       messages: body.messages,

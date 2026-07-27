@@ -17,6 +17,10 @@ export interface Env {
   // One live conversation each: stage cursor, exchange count, budget, and the
   // transcript tail the model is given. The only place the model is called.
   SESSION: DurableObjectNamespace<SessionDO>;
+  // Where the archive is copied, once a day, by the cron (src/archive.ts).
+  // D1 time travel is thirty days and belongs to Cloudflare; this outlives
+  // the database (CLAUDE.md § Data).
+  ARCHIVE: R2Bucket;
   // The sha this Worker was deployed from; "dev" everywhere else.
   COMMIT: string;
   // What the day's model spend may reach before the engine goes quiet, in

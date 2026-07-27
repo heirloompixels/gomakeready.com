@@ -183,6 +183,24 @@
 .finding.thesis p{font-family:'EB Garamond',serif;font-size:19px;line-height:1.55;
   color:var(--ink);max-width:52ch;margin-top:0}
 
+/* ---------- what a letter is kept at ----------
+   The quiet plum line under a letter that was really set: the magic address,
+   said once, in the register. Also the record's own ledger lists. */
+.kept{font-family:'DM Sans',sans-serif;font-size:12.5px;line-height:1.8;
+  color:var(--plum);margin:22px 0 0;max-width:52ch}
+.kept a{color:var(--plum);text-decoration:none;
+  border-bottom:1px solid var(--plum-pale);padding-bottom:2px}
+.kept a:hover{border-bottom-color:var(--plum)}
+.passage .more{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--plum);text-decoration:none;
+  border-bottom:2px solid var(--plum-pale);padding-bottom:4px}
+.passage .more:hover{border-bottom-color:var(--plum)}
+.ledger{list-style:none;margin:0;padding:0;max-width:56ch}
+.ledger li{font-family:'EB Garamond',serif;font-size:clamp(18px,2vw,22px);
+  line-height:1.5;color:var(--grey);border-bottom:1px dotted var(--rule);padding:11px 0}
+.ledger li b{font-family:'EB Garamond',serif;font-weight:600;font-size:1.15em;
+  color:var(--plum);margin-right:.5em}
+
 /* ---------- the honeypot ----------
    A field for machines only. Off the page rather than display:none, which
    the better bots have learned to skip; aria-hidden and tabindex=-1 keep it

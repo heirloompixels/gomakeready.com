@@ -20,6 +20,18 @@ export function costOf(inputTokens: number, outputTokens: number): number {
   return inputTokens * PRICE_IN + outputTokens * PRICE_OUT;
 }
 
+// The letter is set by a Sonnet-class call, once, at the end (src/letter.ts).
+// List rates for claude-sonnet-5 — $3 / $15 per MTok. The introductory rate
+// is lower until September; a cap kept at the list price errs toward closing
+// early, which is the direction a fence should err in.
+export const LETTER_IN = 3.0 / 1_000_000;
+export const LETTER_OUT = 15.0 / 1_000_000;
+
+/** What setting one letter cost, in dollars. */
+export function costOfLetter(inputTokens: number, outputTokens: number): number {
+  return inputTokens * LETTER_IN + outputTokens * LETTER_OUT;
+}
+
 /** The key a day is kept under. UTC, so the day turns at the same instant everywhere. */
 export function dayKey(now: Date = new Date()): string {
   return 'spend:' + now.toISOString().slice(0, 10);

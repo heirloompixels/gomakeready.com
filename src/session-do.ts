@@ -27,9 +27,17 @@ import {
   type Stage,
   systemFor,
 } from './arc';
-import { appendEvent, type Level, setConversationFacts } from './db';
+import {
+  appendEvent,
+  createLetter,
+  type Level,
+  setConversationFacts,
+  setConversationVisibility,
+  sha256hex,
+} from './db';
+import { compose, letterArticle, magicKey } from './letter';
 import { type Line, speak } from './model';
-import { addSpend, costOf, overCap } from './spend';
+import { addSpend, costOf, costOfLetter, overCap } from './spend';
 import type { Env } from './types';
 
 /** How much of the transcript the model is given. Six stages, both voices. */
@@ -211,6 +219,38 @@ export class SessionDO extends DurableObject<Env> {
         });
         if (usd > 0) await addSpend(this.env.SPEND, usd);
 
+        // The finale has been said. Now the other call: one Sonnet-class
+        // request that reads the whole correspondence and sets the letter,
+        // while the visitor is still watching the last line arrive.
+        if (memory.done) {
+          const set = await this.setLetter(memory);
+          if (set === null) {
+            // Twice unreadable. The press has jammed; the letter can still
+            // be set by hand, and the band is where that is said.
+            await put('token', { text: CLOSE_JAMMED });
+            await put('turn', {
+              chips: [],
+              stage,
+              level,
+              done: true,
+              exchanges: memory.exchanges,
+              letter: false,
+            });
+            return;
+          }
+          await put('turn', {
+            chips: [],
+            stage,
+            level,
+            done: true,
+            exchanges: memory.exchanges,
+            letter: true,
+          });
+          // The key exists nowhere but this line and the address it makes.
+          await put('letter', set);
+          return;
+        }
+
         await put('turn', {
           chips: spoken.chips,
           stage,
@@ -235,6 +275,61 @@ export class SessionDO extends DurableObject<Env> {
     void work();
 
     return this.stream(readable);
+  }
+
+  // ————— the letter
+  //
+  // Reached once, from the finale and nowhere else. Two things happen here
+  // that happen nowhere else in the piece: the conversation joins the public
+  // record (the promise the page has been making since the greeting), and a
+  // key is generated that exists in the visitor's URL and in no database.
+  //
+  // The visibility flip comes first and stands on its own: a conversation
+  // that reached the end is part of the record whether or not the press
+  // then jammed. Only the letter is conditional.
+
+  private async setLetter(memory: Memory): Promise<{ number: number; url: string } | null> {
+    try {
+      await setConversationVisibility(this.env.DB, memory.cid, 'public');
+
+      // The tail is the whole correspondence: six stages, both voices, the
+      // on-ramp sentence at its head — twelve lines, which is exactly what
+      // TAIL holds. Nothing is trimmed away before the letter reads it.
+      const set = await compose(
+        this.env,
+        {
+          trade: memory.trade,
+          frictions: memory.frictions,
+          town: memory.town,
+          level: memory.level,
+        },
+        memory.tail,
+      );
+      if (set === null) return null;
+
+      const usd = costOfLetter(set.inputTokens, set.outputTokens);
+      memory.spentUsd += usd;
+      if (usd > 0) await addSpend(this.env.SPEND, usd);
+
+      const article = await letterArticle(set.copy, {
+        number: memory.cid,
+        town: memory.town,
+      });
+      const key = magicKey();
+      const row = await createLetter(this.env.DB, {
+        conversationId: memory.cid,
+        html: String(article),
+        keyHash: await sha256hex(key),
+        hoursLow: set.copy.total_low,
+        hoursHigh: set.copy.total_high,
+      });
+
+      return { number: row.number, url: '/letter/' + row.number + '?k=' + key };
+    } catch {
+      // A write that would not take, a model that would not answer twice: to
+      // the visitor these are the same thing, and it is the jam.
+      return null;
+    }
   }
 
   // ————— the endings that cost nothing

@@ -17,6 +17,9 @@
 // What the Worker knew about the reader, read once, not concatenated into code.
 const EDGE = JSON.parse(document.getElementById('edge').dataset.edge);
 const ENGINE = EDGE.engine === true;
+// The record's real tallies, counted at the edge. Absent — an older page, a
+// database that would not answer — the fork says zero, which is honest.
+const RECORD = EDGE.record || null;
 
 // ============================================================================
 // the human typist
@@ -444,13 +447,38 @@ function revealLetter() {
     d += 0.28;
   });
   a4.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  setTimeout(
-    () => {
-      const ask = document.getElementById('ask');
-      ask.classList.add('on');
-    },
-    d * 1000 + 600,
-  );
+  setTimeout(() => revealAsk(false), d * 1000 + 600);
+}
+
+function revealAsk(scroll) {
+  const ask = document.getElementById('ask');
+  ask.classList.add('on');
+  if (scroll) ask.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// The letter the edge actually set, fetched back as the article alone and
+// poured into the same act, revealed by the same setin. The fragment variant
+// of the magic address (?fragment=1) answers with the <article> and nothing
+// else, so the page is never handed a second copy of itself.
+async function revealSetLetter(set) {
+  const body = document.getElementById('act4').querySelector('.body');
+  try {
+    const r = await fetch(set.url + '&fragment=1', { credentials: 'same-origin' });
+    if (!r.ok) throw new Error('nothing is set at that address');
+    body.innerHTML = await r.text();
+
+    const kept = document.createElement('p');
+    kept.className = 'kept setin';
+    const a = document.createElement('a');
+    a.href = set.url;
+    a.textContent = 'Your letter lives at a private address — keep it.';
+    kept.appendChild(a);
+    body.appendChild(kept);
+  } catch {
+    // The letter is set and safe at its own address; this page could not
+    // fetch it back. The scripted letter stays rather than an empty act.
+  }
+  revealLetter();
 }
 
 // ============================================================================
@@ -559,6 +587,7 @@ function wordPress() {
 async function turn(said) {
   const press = wordPress();
   let ended = null;
+  let set = null; // the letter's Nº and its magic address, when one was set
   try {
     const r = await fetch('/turn', {
       method: 'POST',
@@ -586,6 +615,7 @@ async function turn(said) {
         }
         if (name === 'token' && data) press.write(JSON.parse(data).text);
         else if (name === 'turn' && data) ended = JSON.parse(data);
+        else if (name === 'letter' && data) set = JSON.parse(data);
         cut = buf.indexOf('\n\n');
       }
     }
@@ -599,7 +629,13 @@ async function turn(said) {
   stage = ended.stage;
   if (ended.level) level = ended.level;
   press.end(() => {
-    if (ended.done) revealLetter();
+    // Three ways a conversation can end: a letter really set (fetch it and
+    // show it), a letter that could not be set (the jam close was already
+    // spoken — hand them the band and no document), or an ending that
+    // predates the engine, which reveals the scripted letter as it always has.
+    if (ended.done && set) revealSetLetter(set);
+    else if (ended.done && ended.letter === false) revealAsk(true);
+    else if (ended.done) revealLetter();
     else if (ended.chips?.length) {
       offerChips(ended.chips, (pick) => {
         addTurn('you', pick);
@@ -662,18 +698,30 @@ const FORKS = {
   },
   record: {
     label: 'The record',
-    tally: [
-      { n: '51', l: 'conversations this season' },
-      { n: '19', l: 'mentioned evenings' },
-      { n: '11', l: 'asked about being paid' },
-      { n: '212', l: 'hours found, in sum' },
-    ],
+    tally: recordTally(RECORD),
     paras: [
-      'The thing most often never written at all, across four towns: <em>the words for the work itself.</em> Descriptions, statements, announcements — the tellings.',
-      'Nothing said here is kept whole. It is melted down like old type and recast without a name — and the record is public from the first day, printed each season as a broadside with <b>Truth or Consequences Contemporary</b>. Your conversation would be Nº 052.',
+      'The thing most often never written at all: <em>the words for the work itself.</em> Descriptions, statements, announcements — the tellings.',
+      'Nothing said here is kept whole. It is melted down like old type and recast without a name — and the record is public from the first day, printed each season as a broadside with <b>Truth or Consequences Contemporary</b>.',
+      '<a class="more" href="/record">the record, in full →</a>',
     ],
   },
 };
+
+// The four numbers, as the edge counted them this minute. A missing record
+// reads as zero rather than as a boast — the record opens empty, which is a
+// fact and not a flaw.
+function recordTally(record) {
+  const r = record || {};
+  const n = (v) => String(typeof v === 'number' ? v : 0);
+  const low = typeof r.hoursLow === 'number' ? r.hoursLow : 0;
+  const high = typeof r.hoursHigh === 'number' ? r.hoursHigh : 0;
+  return [
+    { n: n(r.conversations), l: 'conversations in the record' },
+    { n: n(r.letters), l: 'letters set' },
+    { n: n(r.towns), l: r.towns === 1 ? 'town' : 'towns' },
+    { n: low === high ? n(low) : n(low) + '–' + n(high), l: 'hours a week found, in sum' },
+  ];
+}
 
 document.querySelectorAll('.fork').forEach((a) => {
   a.addEventListener('click', (e) => {

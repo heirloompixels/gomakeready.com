@@ -58,6 +58,21 @@
     "bindings": [{ "name": "SESSION", "class_name": "SessionDO" }]
   },
   "migrations": [{ "tag": "v1", "new_sqlite_classes": ["SessionDO"] }],
+  // The archive's other copy. D1 time travel covers the last thirty days and
+  // is Cloudflare's; this is ours and outlives the database — one flat dump
+  // of every table per day, as JSON lines (CLAUDE.md § Data).
+  "r2_buckets": [
+    {
+      "binding": "ARCHIVE",
+      // created 2026-07-26 via `wrangler r2 bucket create gmr-archive`
+      "bucket_name": "gmr-archive"
+    }
+  ],
+  // 09:00 UTC — three in the morning in Bozeman, two in the winter. The cron
+  // is the event: there is no alarm and nothing polls (src/archive.ts).
+  "triggers": {
+    "crons": ["0 9 * * *"]
+  },
   "vars": {
     // COMMIT is overridden with the real sha at deploy:
     //   wrangler deploy --var COMMIT:$(git rev-parse --short HEAD)
