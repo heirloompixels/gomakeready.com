@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mockup 03 · The brief — go, make, ready.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="brand.css">
+<style>
+.briefwrap{display:grid;grid-template-columns:190px 1fr;gap:36px;padding-top:56px}
+.rail{position:sticky;top:96px;align-self:start}
+.rail .note{font-family:'DM Sans',sans-serif;font-size:12.5px;line-height:1.7;
+  color:var(--grey);margin-top:16px;max-width:20ch}
+.rail .note b{color:var(--plum);font-weight:500}
+
+/* the document itself — a printed thing */
+.doc{background:var(--paper-2);border:1px solid var(--rule);max-width:780px;
+  padding:56px 64px 64px;position:relative}
+.doc::before{content:"";position:absolute;top:0;left:0;right:0;height:5px;background:var(--ink)}
+.dochead{display:flex;justify-content:space-between;align-items:baseline;
+  border-bottom:1.5px solid var(--ink);padding-bottom:20px}
+.dochead .t{font-family:'DM Sans',sans-serif;font-size:11.5px;font-weight:700;
+  letter-spacing:.2em;text-transform:uppercase}
+.dochead .t .p{color:var(--plum)}
+.dochead .d{font-family:'DM Sans',sans-serif;font-size:11.5px;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--grey-light)}
+.doc h1{font-family:'EB Garamond',serif;font-weight:500;font-size:clamp(30px,4vw,44px);
+  line-height:1.1;letter-spacing:-.012em;margin:34px 0 8px;max-width:18ch}
+.doc h1 em{font-style:italic;color:var(--plum)}
+.doc .for{font-family:'DM Sans',sans-serif;font-size:13px;color:var(--grey);margin-bottom:36px}
+
+.finding{border-top:1px solid var(--rule);padding:26px 0}
+.finding .fh{display:flex;justify-content:space-between;align-items:baseline;gap:20px}
+.finding h2{font-family:'EB Garamond',serif;font-size:24px;font-weight:500;margin:0;letter-spacing:-.005em}
+.finding .hrs{font-family:'EB Garamond',serif;font-weight:600;font-size:24px;
+  color:var(--plum);white-space:nowrap}
+.finding .hrs small{font-family:'DM Sans',sans-serif;font-weight:400;font-size:11px;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--grey-light);display:block;text-align:right}
+.finding p{font-family:'DM Sans',sans-serif;font-size:14.5px;line-height:1.65;
+  color:var(--grey);margin:12px 0 0;max-width:58ch}
+.finding p b{color:var(--ink);font-weight:500}
+.finding .quote{font-family:'EB Garamond',serif;font-style:italic;font-size:16.5px;
+  color:var(--plum-deep);border-left:2.5px solid var(--plum);padding-left:16px;margin:14px 0 0}
+
+.total{display:flex;align-items:baseline;gap:18px;border-top:1.5px solid var(--ink);
+  margin-top:8px;padding-top:26px}
+.total .n{font-family:'EB Garamond',serif;font-weight:600;font-size:64px;
+  letter-spacing:-.02em;color:var(--plum);line-height:1}
+.total .l{font-family:'DM Sans',sans-serif;font-size:13.5px;color:var(--grey);
+  line-height:1.5;max-width:24ch}
+.doc .keep{font-family:'DM Sans',sans-serif;font-size:12px;line-height:1.7;color:var(--grey-light);
+  border-top:1px solid var(--rule);margin-top:34px;padding-top:18px;max-width:60ch}
+
+/* staged reveal — the brief sets itself onto the page */
+.setin{opacity:0;transform:translateY(10px);filter:blur(1.5px);
+  animation:press .7s cubic-bezier(.2,.88,.22,1) forwards}
+
+/* keep-the-brief band */
+.claim{background:var(--ink);color:var(--paper);margin-top:70px}
+.claim .wrap{padding-top:70px;padding-bottom:76px}
+.claim h2{font-family:'EB Garamond',serif;font-weight:500;
+  font-size:clamp(30px,4.6vw,54px);line-height:1.05;letter-spacing:-.015em;margin:20px 0 0;max-width:18ch}
+.claim h2 em{font-style:italic;color:var(--plum-pale)}
+.claim p{font-size:19px;line-height:1.55;color:#a9b3ba;max-width:52ch;margin:22px 0 0}
+.claim form{display:flex;max-width:520px;margin-top:34px;border:1.5px solid var(--paper)}
+.claim input{flex:1;border:0;background:none;padding:16px 18px;color:var(--paper);
+  font-family:'EB Garamond',serif;font-size:18px;outline:none}
+.claim input::placeholder{color:#61737e;font-style:italic}
+.claim .cta{background:var(--paper);color:var(--ink)}
+.claim .cta:hover{background:var(--plum-pale)}
+.claim .meta{font-family:'DM Sans',sans-serif;font-size:11.5px;letter-spacing:.15em;
+  color:#61737e;margin-top:22px;text-transform:uppercase}
+
+@media(max-width:900px){
+  .briefwrap{grid-template-columns:1fr;gap:20px}
+  .rail{position:static}
+  .doc{padding:34px 24px 40px}
+  .claim form{flex-direction:column;border:0;gap:10px}
+  .claim input{border:1.5px solid var(--paper)}
+}
+</style>
+</head>
+<body>
+
+<div class="mockbar">
+  <div class="wrap">
+    <div><a href="02-session.html">← Session</a> · Mockup 03 · The brief</div>
+    <div><a href="04-admin.html">Next: the desk (admin) →</a></div>
+  </div>
+</div>
+
+<header>
+  <div class="wrap bar">
+    <a href="01-landing.html" class="brandmark">go<span class="p">,</span> make<span class="p">,</span> ready<span class="p">.</span></a>
+    <nav><span class="eyebrow" style="align-self:center">Readiness brief <span class="d">·</span> set just now</span></nav>
+    <div class="end"><a href="#keep" class="navcta">Keep this brief</a></div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <div class="briefwrap">
+
+      <aside class="rail">
+        <div class="eyebrow">Your brief</div>
+        <div class="note">Set from a five-minute conversation. In the real build,
+          each finding <b>composes itself onto the page</b> as the model writes it —
+          streamed from the edge, not faked after.</div>
+      </aside>
+
+      <article class="doc">
+        <div class="dochead setin">
+          <div class="t">go<span class="p">,</span> make<span class="p">,</span> ready<span class="p">.</span> — readiness brief</div>
+          <div class="d">Nº 047 · Santa Fe</div>
+        </div>
+
+        <h1 class="setin" style="animation-delay:.25s">Where the hours are hiding at <em>your gallery.</em></h1>
+        <div class="for setin" style="animation-delay:.4s">Prepared from our conversation · a gallery on Canyon Road · answered by the owner, evenings</div>
+
+        <div class="finding setin" style="animation-delay:.65s">
+          <div class="fh">
+            <h2>The provenance emails</h2>
+            <div class="hrs">3–4 <small>hrs / week</small></div>
+          </div>
+          <p>Collectors ask the same forty questions in different words. Claude, given your
+            artist files and past answers, drafts the reply <b>in your voice</b> — you read it,
+            fix one sentence, send. The judgment stays yours; the typing doesn't.</p>
+          <div class="quote">"I do, evenings mostly" — that's the hour this gives back first.</div>
+        </div>
+
+        <div class="finding setin" style="animation-delay:.9s">
+          <div class="fh">
+            <h2>Listings that write themselves a first draft</h2>
+            <div class="hrs">2–3 <small>hrs / week</small></div>
+          </div>
+          <p>New work arrives, photos are taken, and then the description waits for a quiet
+            evening that doesn't come. From your photos and a few spoken notes, a draft
+            listing is waiting <b>before you've locked the door</b>.</p>
+        </div>
+
+        <div class="finding setin" style="animation-delay:1.15s">
+          <div class="fh">
+            <h2>The social media you never get to</h2>
+            <div class="hrs">1–2 <small>hrs / week</small></div>
+          </div>
+          <p>You said it never gets written at all. A weekly working session becomes six
+            posts drafted from what actually happened in the gallery — <b>you approve,
+            nothing goes out without you.</b></p>
+        </div>
+
+        <div class="total setin" style="animation-delay:1.45s">
+          <div class="n">6–9</div>
+          <div class="l">hours returned in a typical week, from these three alone</div>
+        </div>
+
+        <div class="keep setin" style="animation-delay:1.7s">
+          This brief is yours whether or not we ever talk. Nothing above requires
+          buying software, hiring anyone, or changing how you work with artists —
+          it requires one hour, and a person who has done this before.
+        </div>
+      </article>
+
+    </div>
+  </div>
+
+  <section id="keep" class="claim">
+    <div class="wrap">
+      <div class="eyebrow" style="color:#61737e">Keep it <span class="d" style="color:var(--plum-pale)">·</span> 02</div>
+      <h2>Your brief, in your inbox. <em>And an hour, if you want it.</em></h2>
+      <p>Leave an email and this brief arrives with a private link that stays yours.
+        Kyle reads every one that comes in — if he thinks the hour would be worth it,
+        he'll say so. If it wouldn't, he'll say that too.</p>
+      <form onsubmit="event.preventDefault(); this.querySelector('button').textContent='Sent. Check your inbox.'">
+        <input type="email" placeholder="you@yourgallery.com" required>
+        <button class="cta" type="submit">Send my brief</button>
+      </form>
+      <div class="meta">No list. No sequence. One email with your brief, signed by a person.</div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div><b>go, make, ready.</b> — practical AI, set up by hand.</div>
+    <div>No jargon. No hype. No lock-in. · <a href="mailto:kyle@gomakeready.com">kyle@gomakeready.com</a></div>
+  </div>
+</footer>
+</body>
+</html>

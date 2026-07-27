@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mockup 04 · The desk (admin) — go, make, ready.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="brand.css">
+<style>
+.deskwrap{padding-top:50px}
+.deskhead{display:flex;justify-content:space-between;align-items:baseline;
+  border-bottom:1.5px solid var(--ink);padding-bottom:18px}
+.deskhead h1{font-family:'EB Garamond',serif;font-weight:500;font-size:clamp(30px,4vw,46px);
+  letter-spacing:-.012em;margin:0}
+.deskhead h1 em{font-style:italic;color:var(--plum)}
+.stats{display:flex;gap:34px}
+.stat .n{font-family:'EB Garamond',serif;font-weight:600;font-size:30px;color:var(--ink);line-height:1}
+.stat .n.p{color:var(--plum)}
+.stat .l{font-family:'DM Sans',sans-serif;font-size:10.5px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--grey-light);margin-top:6px}
+
+/* ledger of leads */
+.cols{display:grid;grid-template-columns:1.6fr 1fr;gap:0;border-bottom:1px solid var(--rule)}
+.leads{border-right:1px solid var(--rule);padding-right:0}
+.lead{display:grid;grid-template-columns:1fr auto;gap:4px 18px;padding:20px 24px 20px 0;
+  border-bottom:1px dotted var(--rule);cursor:pointer;transition:background .15s}
+.lead:hover{background:var(--paper-2)}
+.lead.open{background:var(--paper-2);border-left:2.5px solid var(--plum);padding-left:20px;margin-left:-22px}
+.lead .who{font-family:'EB Garamond',serif;font-size:21px;font-weight:500;letter-spacing:-.005em}
+.lead .who small{font-family:'DM Sans',sans-serif;font-size:12px;color:var(--grey-light);font-weight:400;margin-left:10px}
+.lead .line{font-family:'DM Sans',sans-serif;font-size:13px;color:var(--grey);grid-column:1;max-width:52ch}
+.lead .hrs{font-family:'EB Garamond',serif;font-weight:600;font-size:20px;color:var(--plum);
+  grid-row:1 / span 2;align-self:center;text-align:right}
+.lead .hrs small{display:block;font-family:'DM Sans',sans-serif;font-weight:400;font-size:10px;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--grey-light)}
+.status{font-family:'DM Sans',sans-serif;display:inline-block;font-size:10.5px;font-weight:500;
+  letter-spacing:.14em;text-transform:uppercase;padding:3px 9px;border:1.2px solid var(--rule);
+  color:var(--grey);margin-right:10px}
+.status.new{border-color:var(--plum);color:var(--plum)}
+.status.booked{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+
+/* detail pane */
+.detail{padding:26px 0 34px 34px;background:var(--paper-2)}
+.detail .k{font-family:'DM Sans',sans-serif;font-size:11px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--plum);margin-bottom:16px}
+.detail h2{font-family:'EB Garamond',serif;font-size:26px;font-weight:500;margin:0 0 4px}
+.detail .sub{font-family:'DM Sans',sans-serif;font-size:12.5px;color:var(--grey-light);margin-bottom:20px}
+.detail .excerpt{font-family:'EB Garamond',serif;font-style:italic;font-size:17px;line-height:1.5;
+  color:var(--plum-deep);border-left:2.5px solid var(--plum);padding-left:16px;margin:0 0 20px;max-width:44ch}
+.detail .row{font-family:'DM Sans',sans-serif;font-size:13.5px;color:var(--grey);
+  padding:9px 0;border-bottom:1px dotted var(--rule);display:flex;justify-content:space-between;gap:16px}
+.detail .row b{color:var(--ink);font-weight:500}
+.detail .row a{color:var(--plum);text-decoration:none}
+.detail .acts{margin-top:22px;display:flex;gap:10px;flex-wrap:wrap}
+
+/* the MCP band — the real interface */
+.mcp{background:var(--ink);color:var(--paper);margin-top:70px}
+.mcp .wrap{padding-top:66px;padding-bottom:72px;display:grid;grid-template-columns:1fr 1fr;gap:56px}
+.mcp h2{font-family:'EB Garamond',serif;font-weight:500;font-size:clamp(28px,3.6vw,44px);
+  line-height:1.08;letter-spacing:-.014em;margin:18px 0 0;max-width:16ch}
+.mcp h2 em{font-style:italic;color:var(--plum-pale)}
+.mcp p{font-size:17.5px;line-height:1.6;color:#a9b3ba;max-width:44ch;margin:20px 0 0}
+.mcp code{font-family:ui-monospace,Menlo,monospace;font-size:14px;color:var(--plum-pale)}
+.term{background:#091620;border:1px solid #22333d;padding:28px 30px;align-self:start}
+.term .cap{font-family:'DM Sans',sans-serif;font-size:10.5px;letter-spacing:.16em;
+  text-transform:uppercase;color:#61737e;margin-bottom:20px;display:flex;justify-content:space-between}
+.term .cap b{color:var(--plum-pale);font-weight:500}
+.term .msg{font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.6;margin-bottom:18px}
+.term .msg .who{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#61737e;margin-bottom:5px}
+.term .msg.kyle .body{color:var(--paper)}
+.term .msg.claude .body{color:#a9b3ba}
+.term .msg.claude .body b{color:var(--plum-pale);font-weight:500}
+.term .tool{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:#4d6373;
+  border-left:2px solid #22333d;padding-left:10px;margin:8px 0}
+
+@media(max-width:900px){
+  .cols{grid-template-columns:1fr}
+  .leads{border-right:0}
+  .detail{padding-left:0;background:none;border-top:1.5px solid var(--ink)}
+  .mcp .wrap{grid-template-columns:1fr;gap:30px}
+  .stats{display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="mockbar">
+  <div class="wrap">
+    <div><a href="03-brief.html">← Brief</a> · Mockup 04 · The desk — private, behind Cloudflare Access</div>
+    <div><a href="01-landing.html">Back to start ↺</a></div>
+  </div>
+</div>
+
+<header>
+  <div class="wrap bar">
+    <a href="01-landing.html" class="brandmark">go<span class="p">,</span> make<span class="p">,</span> ready<span class="p">.</span></a>
+    <nav><span class="eyebrow" style="align-self:center">The desk <span class="d">·</span> kyle only</span></nav>
+    <div class="end"><span class="eyebrow" style="color:var(--plum)">MCP · connected</span></div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap deskwrap">
+    <div class="deskhead">
+      <h1>The week's <em>conversations.</em></h1>
+      <div class="stats">
+        <div class="stat"><div class="n p">4</div><div class="l">new this week</div></div>
+        <div class="stat"><div class="n">2</div><div class="l">briefs claimed</div></div>
+        <div class="stat"><div class="n">1</div><div class="l">hour booked</div></div>
+        <div class="stat"><div class="n">$1.87</div><div class="l">model spend</div></div>
+      </div>
+    </div>
+
+    <div class="cols">
+      <div class="leads">
+
+        <div class="lead open">
+          <div class="who">Canyon Road gallery <small>Santa Fe · Thu, late evening</small></div>
+          <div class="line"><span class="status new">New</span>Answers email evenings; listings and social never get written. Warm — claimed the brief in 2 minutes.</div>
+          <div class="hrs">6–9<small>hrs/wk</small></div>
+        </div>
+
+        <div class="lead">
+          <div class="who">Fly-fishing outfitter <small>Bozeman · Wed, 6:40 am</small></div>
+          <div class="line"><span class="status new">New</span>Booking back-and-forth and trip-report emails. Session cut short — worth a personal follow-up.</div>
+          <div class="hrs">4–6<small>hrs/wk</small></div>
+        </div>
+
+        <div class="lead">
+          <div class="who">Design studio <small>Vail · Mon</small></div>
+          <div class="line"><span class="status">Contacted</span>Proposal drafting and client revision emails. Replied to the brief email, asked about pricing.</div>
+          <div class="hrs">5–7<small>hrs/wk</small></div>
+        </div>
+
+        <div class="lead">
+          <div class="who">Real estate broker <small>Aspen · last week</small></div>
+          <div class="line"><span class="status booked">Booked</span>Listing descriptions and disclosure paperwork. Hour scheduled Tuesday, 10 am.</div>
+          <div class="hrs">7–9<small>hrs/wk</small></div>
+        </div>
+
+      </div>
+
+      <div class="detail">
+        <div class="k">Lead Nº 047</div>
+        <h2>Canyon Road gallery</h2>
+        <div class="sub">Santa Fe · session Thu 9:12 pm · 11 turns · brief claimed · $0.04 model spend</div>
+        <div class="excerpt">"Honestly, the artist statements never get written at all. I feel bad about it every week."</div>
+        <div class="row"><span>Frictions</span><b>provenance email · listings · social</b></div>
+        <div class="row"><span>Answers email</span><b>owner, evenings</b></div>
+        <div class="row"><span>Brief</span><a href="03-brief.html">read the brief they saw →</a></div>
+        <div class="row"><span>Transcript</span><a href="#">full conversation →</a></div>
+        <div class="acts">
+          <button class="cta">Draft follow-up</button>
+          <button class="cta ghost">Mark contacted</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- The actual daily interface: Claude Desktop over MCP -->
+  <section class="mcp">
+    <div class="wrap">
+      <div>
+        <div class="eyebrow" style="color:#61737e">The real interface <span class="d" style="color:var(--plum-pale)">·</span> MCP</div>
+        <h2>You'll rarely open this page. <em>You'll just ask.</em></h2>
+        <p>The desk is also an MCP server at <code>gomakeready.com/mcp</code>.
+          Connected to Claude Desktop alongside Gmail, the whole CRM becomes a
+          conversation — which is, not incidentally, the product being sold.</p>
+        <p style="font-size:14px;color:#61737e">Tools: <code>list_leads</code> · <code>get_lead</code> · <code>update_status</code> · <code>add_note</code> · <code>weekly_digest</code></p>
+      </div>
+      <div class="term">
+        <div class="cap"><span>Claude Desktop</span><b>gomakeready + gmail</b></div>
+        <div class="msg kyle">
+          <div class="who">Kyle</div>
+          <div class="body">Anything come in while I was fishing?</div>
+        </div>
+        <div class="msg claude">
+          <div class="who">Claude</div>
+          <div class="tool">→ gomakeready · list_leads(since: "yesterday")</div>
+          <div class="body">Two. The warm one is a <b>Canyon Road gallery</b> — owner answers
+            email evenings, claimed their brief within two minutes. Estimated 6–9 hrs/wk.
+            The other, a Bozeman outfitter, left mid-session; probably worth a personal note.</div>
+        </div>
+        <div class="msg kyle">
+          <div class="who">Kyle</div>
+          <div class="body">Draft a follow-up to the gallery in my voice, mention the artist statements thing.</div>
+        </div>
+        <div class="msg claude">
+          <div class="who">Claude</div>
+          <div class="tool">→ gomakeready · get_lead(047) · gmail · create_draft</div>
+          <div class="body">Draft's in your Gmail. It opens with the statements
+            they said never get written, not with the product. <b>Ready when you are.</b></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div><b>go, make, ready.</b> — practical AI, set up by hand.</div>
+    <div>The desk · private · <a href="01-landing.html">public site →</a></div>
+  </div>
+</footer>
+</body>
+</html>

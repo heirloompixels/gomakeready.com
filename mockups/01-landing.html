@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mockup 01 · Landing — go, make, ready.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="brand.css">
+<style>
+/* hero */
+.hero{padding:74px 0 0;position:relative}
+.giant{font-family:'EB Garamond',serif;font-weight:500;
+  font-size:clamp(58px,13.5vw,188px);line-height:.86;letter-spacing:-.02em;margin:0}
+.giant span{display:block;opacity:0;transform:translateY(10px);filter:blur(1.5px);
+  animation:press .78s cubic-bezier(.2,.88,.22,1) forwards}
+.giant .c{color:var(--plum);display:inline}
+.giant span:nth-child(2){animation-delay:.11s}
+.giant span:nth-child(3){animation-delay:.22s}
+
+/* the geo-aware greeting — rendered at the edge in the real build */
+.greet{border-top:1.5px solid var(--ink);margin-top:44px;padding-top:26px}
+.greet .line{font-family:'EB Garamond',serif;font-size:clamp(24px,3.2vw,36px);
+  line-height:1.3;letter-spacing:-.008em;max-width:30ch;margin:10px 0 0;min-height:2.6em}
+.greet .line em{font-style:italic;color:var(--plum)}
+.caret{display:inline-block;width:2px;height:.95em;background:var(--plum);
+  vertical-align:-.12em;margin-left:2px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.greet .foot{font-family:'DM Sans',sans-serif;font-size:11.5px;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--grey-light);margin-top:18px}
+.greet .foot b{color:var(--plum);font-weight:500}
+
+/* on-ramp — a sentence that composes itself, no boxes */
+.onramp{display:grid;grid-template-columns:190px 1fr;gap:36px;
+  border-top:1.5px solid var(--ink);margin-top:56px;padding-top:34px;padding-bottom:20px}
+.compose{max-width:820px}
+.cline{font-family:'EB Garamond',serif;font-weight:500;
+  font-size:clamp(26px,3.6vw,44px);line-height:1.32;letter-spacing:-.012em;
+  margin:0 0 14px;display:none}
+.cline.on{display:block;animation:press .7s cubic-bezier(.2,.88,.22,1) both}
+.cline .sep{color:var(--rule);font-weight:400;margin:0 .05em}
+.pick{font:inherit;background:none;border:0;padding:0;cursor:pointer;
+  color:var(--grey);text-decoration:underline;text-decoration-style:dotted;
+  text-decoration-color:var(--plum-pale);text-underline-offset:6px;
+  text-decoration-thickness:1.5px;transition:color .15s}
+.pick:hover{color:var(--plum)}
+.pick.set{color:var(--plum);font-style:italic;text-decoration:none;cursor:default}
+.pick.gone{display:none}
+.cline .chosen{color:var(--plum);font-style:italic}
+.golink{font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--ink);text-decoration:none;
+  border-bottom:2px solid var(--plum);padding-bottom:5px;transition:color .15s}
+.golink:hover{color:var(--plum)}
+.compose .note{font-family:'DM Sans',sans-serif;font-size:13px;line-height:1.6;
+  color:var(--grey-light);margin:30px 0 0;max-width:52ch}
+
+/* quiet second door */
+.aside{margin-top:22px;font-family:'DM Sans',sans-serif;font-size:13.5px;color:var(--grey)}
+.aside a{color:var(--plum);text-decoration:none;border-bottom:1px solid var(--plum-pale);padding-bottom:2px}
+
+.herofoot{display:flex;gap:32px;flex-wrap:wrap;border-top:1px solid var(--rule);
+  margin-top:58px;padding-top:15px}
+.herofoot div{font-family:'DM Sans',sans-serif;font-size:11.5px;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--grey-light)}
+
+@media(max-width:900px){
+  .onramp{grid-template-columns:1fr;gap:18px}
+  .panel{padding:26px 22px 30px}
+}
+</style>
+</head>
+<body>
+
+<div class="mockbar">
+  <div class="wrap">
+    <div>Mockup 01 · Landing &amp; on-ramp</div>
+    <div><a href="02-session.html">Next: the readiness session →</a></div>
+  </div>
+</div>
+
+<header>
+  <div class="wrap bar">
+    <a href="#" class="brandmark">go<span class="p">,</span> make<span class="p">,</span> ready<span class="p">.</span></a>
+    <nav>
+      <a href="#">The shift</a>
+      <a href="#">How it goes</a>
+      <a href="#">What changes</a>
+      <a href="#">Working together</a>
+    </nav>
+    <div class="end"><a href="02-session.html" class="navcta">Begin a session</a></div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <section class="hero">
+      <h1 class="giant">
+        <span>Go<span class="c">,</span></span>
+        <span>make<span class="c">,</span></span>
+        <span>ready<span class="c">.</span></span>
+      </h1>
+
+      <!-- Edge-rendered greeting: the Worker knows the visitor's town and the hour.
+           No tracking, no cookies — Cloudflare hands it to us on every request. -->
+      <div class="greet">
+        <div class="eyebrow">The site is speaking to you <span class="d">·</span> 01</div>
+        <p class="line" id="greetline"></p>
+        <div class="foot">Set at the edge for <b id="geotown">Bozeman</b> · no cookies, no tracking · <span style="color:var(--plum)">this line is different in Santa Fe</span></div>
+      </div>
+
+      <!-- Structured on-ramp: zero model cost until the visitor has invested.
+           Set as a sentence the visitor completes, not a form. -->
+      <div class="onramp">
+        <div class="eyebrow">Readiness session <span class="d">·</span> two lines, then we talk</div>
+        <div class="compose">
+          <p class="cline on" id="line1">I keep
+            <span id="bizChoices"><button class="pick">a gallery</button><span class="sep"> / </span><button class="pick">an outfitter</button><span class="sep"> / </span><button class="pick">a design studio</button><span class="sep"> / </span><button class="pick">an architecture practice</button><span class="sep"> / </span><button class="pick">a real-estate desk</button><span class="sep"> / </span><button class="pick">something else</button></span><span id="comma1" style="display:none">,</span>
+          </p>
+          <p class="cline" id="line2"><span id="lead2"></span>
+            <span id="frictionChoices" style="display:none"><button class="pick">the same emails</button><span class="sep"> / </span><button class="pick">listings &amp; descriptions</button><span class="sep"> / </span><button class="pick">chasing invoices</button><span class="sep"> / </span><button class="pick">scheduling</button><span class="sep"> / </span><button class="pick">the social media I never get to</button><span class="sep"> / </span><button class="pick">the inbox, generally</button></span><span id="period2" style="display:none">.</span>
+          </p>
+          <p class="cline" id="line3"><span id="lead3"></span>&nbsp;&nbsp;<a class="golink" id="golink" href="02-session.html" style="display:none">Begin the conversation →</a></p>
+          <p class="note">Three questions about how your week actually goes, then a one-page
+            brief of where the hours are hiding. Yours to keep either way.<br><br>
+            Rather just talk to a person? <a href="mailto:kyle@gomakeready.com" style="color:var(--plum);text-decoration:none">kyle@gomakeready.com</a> — same conversation, slower typist.</p>
+        </div>
+      </div>
+
+      <div class="herofoot">
+        <div>Bozeman</div><div>Santa Fe</div><div>Vail</div><div>Aspen</div>
+        <div style="color:var(--plum)">Remote, with occasional coffee</div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div><b>go, make, ready.</b> — practical AI, set up by hand.</div>
+    <div>No jargon. No hype. No lock-in. · <a href="mailto:kyle@gomakeready.com">kyle@gomakeready.com</a></div>
+  </div>
+</footer>
+
+<script>
+// ---- Edge greeting (mocked) ------------------------------------------------
+// In the real build the Worker reads request.cf.city + local hour and renders
+// this line into the HTML at the edge. Here we type it to show the feel.
+const town = 'Bozeman';
+const hour = new Date().getHours();
+const daypart = hour < 12 ? 'morning' : hour < 17 ? 'afternoon' : 'evening';
+const line = `Good ${daypart}, ${town}. While the valley was busy, we made time. Want some of yours back?`;
+
+document.getElementById('geotown').textContent = town;
+
+// ---- The human typist ------------------------------------------------------
+// A hand, not a teletype: occasional slips that get backspaced, hesitation
+// after commas and mid-thought, sometimes a word struck and reset.
+const NEAR = {a:'sq',b:'vn',c:'xv',d:'sf',e:'wr',f:'dg',g:'fh',h:'gj',i:'uo',k:'jl',
+  l:'k',m:'n',n:'bm',o:'ip',p:'o',r:'et',s:'ad',t:'ry',u:'yi',v:'cb',w:'qe',y:'tu'};
+const slip = c => {
+  const n = NEAR[c.toLowerCase()];
+  return n ? n[Math.floor(Math.random() * n.length)] : c;
+};
+
+function buildTape(text, o){
+  const q = [];
+  const words = text.split(' ');
+  let typos = 0;
+  const maxTypos = o.maxTypos ?? 3;
+  let retypeAt = -1;
+  if (o.retype !== false){
+    const cands = words.map((w, i) => ({w, i}))
+      .filter(x => x.i > 2 && x.i < words.length - 3 && x.w.replace(/[^a-z]/gi,'').length >= 5);
+    if (cands.length) retypeAt = cands[Math.floor(Math.random() * cands.length)].i;
+  }
+  words.forEach((w, wi) => {
+    for (const c of w){
+      if (/[a-z]/i.test(c) && typos < maxTypos && Math.random() < 0.035){
+        q.push({a:'type', c: slip(c)});                    // the slip
+        q.push({a:'pause', ms: 280 + Math.random() * 260}); // …noticing it
+        q.push({a:'bs'});
+        typos++;
+      }
+      q.push({a:'type', c});
+    }
+    if (wi === retypeAt){
+      q.push({a:'pause', ms: 300});
+      for (let k = 0; k < w.length; k++) q.push({a:'bs'});
+      q.push({a:'pause', ms: 220});
+      for (const c of w) q.push({a:'type', c});
+    }
+    if (wi < words.length - 1){
+      q.push({a:'type', c:' '});
+      if (w.endsWith(',')) q.push({a:'pause', ms: 420});
+      else if (Math.random() < 0.12) q.push({a:'pause', ms: 220 + Math.random() * 380});
+    }
+  });
+  return q;
+}
+
+function humanType(el, text, done, o = {}){
+  const caret = document.createElement('span'); caret.className = 'caret';
+  const q = buildTape(text, o);
+  const render = buf => {
+    el.innerHTML = o.em ? buf.replace(o.em, '<em>' + o.em + '</em>') : buf;
+    el.appendChild(caret);
+  };
+  (function run(idx, buf){
+    if (idx >= q.length){
+      setTimeout(() => { caret.remove(); if (done) done(); }, o.hold ?? 400);
+      return;
+    }
+    const e = q[idx];
+    if (e.a === 'type'){
+      buf += e.c; render(buf);
+      setTimeout(() => run(idx + 1, buf), 42 + Math.random() * 46);
+    } else if (e.a === 'bs'){
+      buf = buf.slice(0, -1); render(buf);
+      setTimeout(() => run(idx + 1, buf), 55 + Math.random() * 45);
+    } else {
+      setTimeout(() => run(idx + 1, buf), e.ms);
+    }
+  })(0, '');
+}
+
+// the greeting
+setTimeout(() => {
+  humanType(document.getElementById('greetline'), line, null, {em: 'we made time', hold: 1600});
+}, 900);
+
+// ---- On-ramp: the sentence composes itself ---------------------------------
+// Line 1: pick one — the chosen words stay set, the rest fall away,
+// then the next line is typed by the same hand.
+document.querySelectorAll('#bizChoices .pick').forEach(b => b.addEventListener('click', () => {
+  const wrap = document.getElementById('bizChoices');
+  wrap.querySelectorAll('.sep').forEach(s => s.remove());
+  wrap.querySelectorAll('.pick').forEach(x => { if (x !== b) x.classList.add('gone'); });
+  b.classList.add('set');
+  document.getElementById('comma1').style.display = 'inline';
+  setTimeout(() => {
+    document.getElementById('line2').classList.add('on');
+    humanType(document.getElementById('lead2'), 'and the week disappears into', () => {
+      const fc = document.getElementById('frictionChoices');
+      fc.style.display = 'inline';
+      let d = 0;
+      fc.querySelectorAll('.pick, .sep').forEach(elm => {
+        elm.classList.add('press-in');
+        elm.style.animationDelay = d + 's';
+        if (elm.classList.contains('pick')) d += 0.14;
+      });
+    }, {maxTypos: 1, retype: false, hold: 250});
+  }, 420);
+}));
+
+// Line 2: pick what rings true — toggles, several allowed —
+// then the closing line arrives the same way.
+let picked = 0, closing = false;
+document.querySelectorAll('#frictionChoices .pick').forEach(b => b.addEventListener('click', () => {
+  const on = b.classList.toggle('set');
+  picked += on ? 1 : -1;
+  document.getElementById('period2').style.display = picked > 0 ? 'inline' : 'none';
+  if (picked > 0 && !closing){
+    closing = true;
+    setTimeout(() => {
+      document.getElementById('line3').classList.add('on');
+      humanType(document.getElementById('lead3'), "Then let's go find it", () => {
+        const g = document.getElementById('golink');
+        g.style.display = 'inline-block';
+        g.classList.add('press-in');
+      }, {maxTypos: 1, retype: false, hold: 220});
+    }, 420);
+  }
+}));
+</script>
+</body>
+</html>
