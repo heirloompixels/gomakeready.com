@@ -182,3 +182,11 @@
 .finding.thesis{border-top:1.5px solid var(--ink)}
 .finding.thesis p{font-family:'EB Garamond',serif;font-size:19px;line-height:1.55;
   color:var(--ink);max-width:52ch;margin-top:0}
+
+/* ---------- the honeypot ----------
+   A field for machines only. Off the page rather than display:none, which
+   the better bots have learned to skip; aria-hidden and tabindex=-1 keep it
+   away from anyone reading with a keyboard or a screen reader. It is
+   position:absolute inside a flex form, so it takes no part in the layout. */
+.trap{position:absolute;left:-9999px;top:auto;width:1px;height:1px;
+  overflow:hidden;opacity:0;pointer-events:none}

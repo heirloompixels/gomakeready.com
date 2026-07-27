@@ -528,10 +528,46 @@ document.querySelectorAll('.fork').forEach((a) => {
 
 // ============================================================================
 // the ask — the mockup said this with an onsubmit attribute; inline script is
-// not served here, so the handler is bound like everything else.
+// not served here, so the handler is bound like everything else. The mockup
+// only changed the button's word; now the address goes to the desk first and
+// the button wears whatever the desk says back.
 // ============================================================================
 const askForm = document.querySelector('#ask form');
-askForm.addEventListener('submit', (e) => {
+const askButton = askForm.querySelector('button');
+
+askForm.addEventListener('submit', async (e) => {
   e.preventDefault();
-  askForm.querySelector('button').textContent = 'Spoken for. Watch your inbox.';
+  if (askButton.disabled) return;
+  askButton.disabled = true;
+
+  // Form-encoded, because a form is what this is. The honeypot rides along
+  // filled in by no one, which is the whole of its evidence.
+  const body = new URLSearchParams();
+  body.set('email', askForm.querySelector('input[name="email"]').value);
+  body.set('website', askForm.querySelector('input[name="website"]').value);
+
+  let said = null;
+  try {
+    const r = await fetch('/ask', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'content-type': 'application/x-www-form-urlencoded' },
+      body: body.toString(),
+    });
+    if (r.ok) {
+      const answer = await r.json();
+      said = typeof answer.said === 'string' ? answer.said : null;
+    }
+  } catch {
+    said = null;
+  }
+
+  if (said) {
+    askButton.textContent = said;
+    return;
+  }
+  // A refusal or a jam reads the same from here, and either is worth one
+  // more try: the button says so and gives itself back.
+  askButton.textContent = 'The press jammed. Try once more.';
+  askButton.disabled = false;
 });

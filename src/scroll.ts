@@ -142,7 +142,12 @@ export const scroll = (edge: Edge) => html`<!doctype html>
         with your letter, printed and set properly. If the hour isn't worth it, say so,
         and the fifty comes back.</p>
       <form>
-        <input type="email" placeholder="you@yourshop.com" required>
+        <input type="email" name="email" placeholder="you@yourshop.com" required>
+        <!-- The honeypot. Off the page, out of the tab order, hidden from a
+             screen reader: no honest hand can reach it, so anything in it
+             came from a machine. Served in the markup rather than added by
+             script, so it is there for a reader with no JavaScript too. -->
+        <input class="trap" type="text" name="website" tabindex="-1" aria-hidden="true" autocomplete="off">
         <button class="cta" type="submit">Claim the hour — $50</button>
       </form>
       <div class="meta">In Bozeman through the summer · elsewhere by Zoom<br>

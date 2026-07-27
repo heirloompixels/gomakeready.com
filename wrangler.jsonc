@@ -25,6 +25,29 @@
     "html_handling": "none",
     "not_found_handling": "none"
   },
+  // The archive. One database, this project's own — never shared with the
+  // other portals (CLAUDE.md § Data). Migrations are checked into the repo
+  // and applied by hand, like the deploys: `wrangler d1 migrations apply gmr`
+  // (add --local for the dev copy). The binding is DB, as in the200 —
+  // one database per Worker means the name never has to say which.
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "gmr",
+      // created 2026-07-26 via `wrangler d1 create gmr`
+      "database_id": "ebb7f0a8-93c7-4070-b666-604de15a9b82",
+      "migrations_dir": "migrations"
+    }
+  ],
+  // The daily spend tally (CLAUDE.md § Guardrails 4). Bound now and spent at
+  // step 4: a counter with a day's memory is KV's whole shape, and the
+  // archive should not carry the wallet's bookkeeping.
+  "kv_namespaces": [
+    {
+      "binding": "SPEND",
+      "id": "3a301b26900d4813869896e28c5d84f3"
+    }
+  ],
   "vars": {
     // COMMIT is overridden with the real sha at deploy:
     //   wrangler deploy --var COMMIT:$(git rev-parse --short HEAD)

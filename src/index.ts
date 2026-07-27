@@ -6,6 +6,7 @@
 // The stylesheets, the fonts and the client hand are static assets, served
 // from this origin and no other.
 import { Hono } from 'hono';
+import { handleAsk } from './ask';
 import { edgeGreeting, type Where } from './greeting';
 import { guardHeaders } from './headers';
 import { scroll } from './scroll';
@@ -60,5 +61,10 @@ app.on(READ, '/', async (c) => page(await scroll(edgeGreeting(where(c.req.raw)))
 // What the Worker knows about itself: that it is up, and which commit it was
 // cut from. `wrangler deploy --var COMMIT:$(git rev-parse --short HEAD)`.
 app.on(READ, '/_health', (c) => json({ ok: true, name: 'gmr', commit: c.env.COMMIT }));
+
+// The ask band. The one public write so far, and the only address at which
+// this Worker answers a POST — a GET here is a miss like any other, because
+// there is no page to see. The guards live with the handler (src/ask.ts).
+app.post('/ask', (c) => handleAsk(c.env, c.req.raw));
 
 export default { fetch: app.fetch };
