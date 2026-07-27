@@ -6,6 +6,7 @@
       "**",
       "!**/mockups",
       "!**/print",
+      "!**/assets/*.css",
       "!**/templates",
       "!**/*.html",
       "!**/fixtures",

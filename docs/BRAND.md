@@ -47,8 +47,23 @@ design must still read if the plum plate is dropped.
 | Display, body | EB Garamond (400, 500, 600, italics) |
 | Utility: labels, nav, buttons, small caps | DM Sans (400, 500, 700) |
 
-Loaded from Google Fonts via `<link>`. The print source embeds the variable
-TTFs from `print/fonts/`.
+The mockups load Google Fonts via `<link>`. **The Worker does not** — pages are
+self-contained at runtime, zero external requests (CLAUDE.md § Design). The
+served faces are subsets of the same variable TTFs the print source embeds,
+`print/fonts/` → `assets/fonts/`, latin only, weight axis intact:
+
+```
+for f in EBGaramond:eb-garamond EBGaramond-Italic:eb-garamond-italic DMSans:dm-sans; do
+  uvx --with brotli --from fonttools pyftsubset "print/fonts/${f%%:*}.ttf" \
+    --output-file="assets/fonts/${f##*:}.woff2" --flavor=woff2 \
+    --unicodes="U+0000-00FF,U+2000-206F,U+2074,U+20AC,U+2212,U+2215"
+done
+```
+
+No `--instance`: the axes survive, so `@font-face` in `assets/brand.css`
+declares ranges (`font-weight: 400 800` for EB Garamond, `100 1000` for DM
+Sans, which also keeps its `opsz` axis) and one file covers every weight the
+page sets. 851K/754K/240K of TTF become 42K/44K/58K of woff2.
 
 ## Structure
 

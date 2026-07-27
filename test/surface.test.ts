@@ -1,5 +1,6 @@
-// The HTTP surface, pinned. Three answers exist at step 2 — the holding
-// page, the health organ, and the miss — and this suite is their contract.
+// The HTTP surface, pinned. The scroll has its own suite (scroll.test.ts);
+// what is pinned here is everything around it — the health organ, the miss,
+// and the guard headers every answer carries.
 // The Worker runs for real here: SELF is the whole fetch handler.
 import { env, SELF } from 'cloudflare:test';
 import { describe, expect, it } from 'vitest';
@@ -11,19 +12,12 @@ const JSON_CT = 'application/json; charset=utf-8';
 const at = (path: string, init: RequestInit = {}): Promise<Response> =>
   SELF.fetch('http://example.com' + path, init);
 
-describe('the holding page', () => {
-  it('is set on paper, in ink, in the register', async () => {
+describe('the page', () => {
+  it('is set on paper, in the register', async () => {
     const r = await at('/');
     expect(r.status).toBe(200);
     expect(r.headers.get('content-type')).toBe(HTML);
-    const body = await r.text();
-    expect(body).toContain('<title>go, make, ready.</title>');
-    expect(body).toContain('the press is being set.');
-    expect(body).toContain('#f7f4ef'); // paper
-    expect(body).toContain('#0d1f29'); // ink
-    expect(body).toContain('#7d4060'); // the commas, in plum
-    // Fonts are ours or the reader's. Nothing is fetched from anyone else.
-    expect(body).not.toContain('fonts.googleapis.com');
+    expect(await r.text()).toContain('go, make, ready.');
   });
 
   it('answers a HEAD the same way', async () => {
@@ -31,6 +25,25 @@ describe('the holding page', () => {
     expect(r.status).toBe(200);
     expect(r.headers.get('content-type')).toBe(HTML);
   });
+});
+
+describe('the guard headers', () => {
+  // Every surface carries them, whatever it answers with.
+  for (const path of ['/', '/_health', '/nothing-here']) {
+    it('are on ' + path, async () => {
+      const r = await at(path);
+      const csp = r.headers.get('content-security-policy') ?? '';
+      expect(csp).toContain("default-src 'none'");
+      expect(csp).toContain("script-src 'self'");
+      expect(csp).toContain("style-src 'self'");
+      expect(csp).toContain("font-src 'self'");
+      // Nothing inline is served, so nothing inline is allowed.
+      expect(csp).not.toContain('unsafe-inline');
+      expect(csp).not.toContain('unsafe-eval');
+      expect(r.headers.get('x-content-type-options')).toBe('nosniff');
+      expect(r.headers.get('referrer-policy')).toBe('no-referrer');
+    });
+  }
 });
 
 describe('health', () => {
