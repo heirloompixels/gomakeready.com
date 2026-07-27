@@ -48,11 +48,33 @@
       "id": "3a301b26900d4813869896e28c5d84f3"
     }
   ],
+  // One live conversation each: the stage cursor, the exchange count, the
+  // running spend and the transcript tail the model is given (src/session-do.ts).
+  // SQLite-backed on purpose — `new_sqlite_classes` is the only storage
+  // backend the free plan will run, and the one the storage API assumes going
+  // forward. A session has no alarm and never polls: it wakes when a visitor
+  // takes a turn and costs nothing between them (CLAUDE.md § Data).
+  "durable_objects": {
+    "bindings": [{ "name": "SESSION", "class_name": "SessionDO" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["SessionDO"] }],
   "vars": {
     // COMMIT is overridden with the real sha at deploy:
     //   wrangler deploy --var COMMIT:$(git rev-parse --short HEAD)
     // and reported at /_health, so a live Worker always names the commit it
     // was cut from (CLAUDE.md § Toolchain).
-    "COMMIT": "dev"
+    "COMMIT": "dev",
+    // What the day's model spend may reach before the engine goes quiet, in
+    // dollars (CLAUDE.md § Guardrails 4). Raising it is a deploy flag:
+    //   wrangler deploy --var DAILY_CAP_USD:25
+    "DAILY_CAP_USD": "10"
   }
+  // Secrets are not in this file and never will be. Before the first deploy
+  // that talks to a model, by hand, with the token sourced as
+  // docs/DEPLOY.md says:
+  //   pnpm wrangler secret put SESSION_SECRET      # signs the presence token
+  //   pnpm wrangler secret put ANTHROPIC_API_KEY   # the interview
+  // With ANTHROPIC_API_KEY absent the Worker still serves the whole piece —
+  // the page runs its scripted conversation and no model is called. Locally
+  // both come from .dev.vars (see .dev.vars.example), which is gitignored.
 }

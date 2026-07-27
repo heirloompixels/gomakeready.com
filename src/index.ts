@@ -7,10 +7,13 @@
 // from this origin and no other.
 import { Hono } from 'hono';
 import { handleAsk } from './ask';
+import { engineOn, handleSession, handleTurn } from './converse';
 import { edgeGreeting, type Where } from './greeting';
 import { guardHeaders } from './headers';
 import { scroll } from './scroll';
 import type { Env } from './types';
+
+export { SessionDO } from './session-do';
 
 const READ = ['GET', 'HEAD'];
 
@@ -56,7 +59,13 @@ const where = (req: Request): Where | undefined =>
 
 // The scroll. Cloudflare says where the reader is; the greeting is composed
 // here, before the first byte, and the browser is told rather than asked.
-app.on(READ, '/', async (c) => page(await scroll(edgeGreeting(where(c.req.raw)))));
+// Whether there is an engine behind the conversation is settled here too, so
+// the page never offers a correspondence the Worker cannot pay for: with no
+// key, or past the day's cap, the client runs its scripted bank exactly as it
+// did before step 4 and the visitor is told nothing about wallets.
+app.on(READ, '/', async (c) =>
+  page(await scroll(edgeGreeting(where(c.req.raw)), await engineOn(c.env))),
+);
 
 // What the Worker knows about itself: that it is up, and which commit it was
 // cut from. `wrangler deploy --var COMMIT:$(git rev-parse --short HEAD)`.
@@ -66,5 +75,12 @@ app.on(READ, '/_health', (c) => json({ ok: true, name: 'gmr', commit: c.env.COMM
 // this Worker answers a POST — a GET here is a miss like any other, because
 // there is no page to see. The guards live with the handler (src/ask.ts).
 app.post('/ask', (c) => handleAsk(c.env, c.req.raw));
+
+// The conversation. `/session` is reachable only once the sentence on-ramp is
+// complete — the client posts what the visitor composed — and `/turn` only
+// with the presence token `/session` minted. Neither is a page; a GET at
+// either is a miss like any other (src/converse.ts).
+app.post('/session', (c) => handleSession(c.env, c.req.raw));
+app.post('/turn', (c) => handleTurn(c.env, c.req.raw));
 
 export default { fetch: app.fetch };

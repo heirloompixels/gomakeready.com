@@ -21,7 +21,14 @@ for the piece itself). The brochure stays live until the app replaces it.
       domain can bind (`portals/docs/cloudflare-access.md`). Until then the
       Worker serves at `gmr.analogkyle.workers.dev`.
 - [ ] **Workers Paid** ($5/mo) before the first public deploy — the free plan
-      stops serving rather than degrading when caps hit.
+      stops serving rather than degrading when caps hit. (The session Durable
+      Object is SQLite-backed, so it would run on the free plan; nothing else
+      would.)
+- [ ] **Two secrets, by hand, before the first deploy that talks to a model:**
+      `wrangler secret put SESSION_SECRET` (signs the presence token) and
+      `wrangler secret put ANTHROPIC_API_KEY`. Without the key the Worker still
+      serves the whole piece on its scripted conversation and spends nothing —
+      which is the right way to deploy it first and watch it.
 - [ ] **How the $50 gets paid.** Probably a Stripe payment link — one quiet
       link, no cart. Undecided.
 - [ ] **How the letter reaches the inbox.** Transactional sender (Resend?) vs
@@ -38,9 +45,12 @@ for the piece itself). The brochure stays live until the app replaces it.
 - [ ] 3. Port the piece: scroll served from `hono/html`, edge greeting from
       `request.cf` (city + timezone), fonts self-hosted (subset the variable
       TTFs already in `print/fonts/`), typist as client script.
-- [ ] 4. The conversation engine: session Durable Object (presence token,
+- [x] 4. The conversation engine: session Durable Object (presence token,
       exchange + spend budget), Anthropic API streaming, the six-stage arc as
       stage directions, all five guardrails (CLAUDE.md § Guardrails).
+      Letter generation stays scripted until step 5; the finale reveals the
+      static letter act as it always has. Still owed: a real browser smoke of
+      the streamed path against `wrangler dev` with a live key.
 - [ ] 5. The letter and the ledger: D1 schema (append-only events, leads,
       letters, numbering), Sonnet letter call, magic link, R2 export.
 - [ ] 6. The record: aggregation + public page, live from conversation Nº 1.

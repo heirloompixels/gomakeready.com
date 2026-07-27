@@ -13,7 +13,7 @@
 import { html } from 'hono/html';
 import type { Edge } from './greeting';
 
-export const scroll = (edge: Edge) => html`<!doctype html>
+export const scroll = (edge: Edge, engine = false) => html`<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -163,7 +163,7 @@ export const scroll = (edge: Edge) => html`<!doctype html>
   </div>
 </footer>
 
-<div id="edge" hidden data-edge="${JSON.stringify({ town: edge.town, greeting: edge.greeting })}"></div>
+<div id="edge" hidden data-edge="${JSON.stringify({ town: edge.town, greeting: edge.greeting, engine })}"></div>
 <script src="/scroll.js" defer></script>
 </body>
 </html>

@@ -16,7 +16,12 @@ export default defineConfig(async () => {
       cloudflareTest({
         wrangler: { configPath: './wrangler.jsonc' },
         miniflare: {
-          bindings: { TEST_MIGRATIONS: migrations },
+          // SESSION_SECRET is a secret in production (`wrangler secret put`)
+          // and comes from .dev.vars locally; the suite supplies its own so
+          // the presence token is signed with something known and stable.
+          // ANTHROPIC_API_KEY is deliberately absent: a test that wants an
+          // engine sets it, and every other test proves the scripted path.
+          bindings: { TEST_MIGRATIONS: migrations, SESSION_SECRET: 'test-secret' },
         },
       }),
     ],

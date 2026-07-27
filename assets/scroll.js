@@ -7,11 +7,16 @@
 // the ask form's handler, which the mockup wrote as an onsubmit attribute,
 // is bound here so no script runs inline.
 //
-// The conversation below is still scripted. The model engine lands at
-// step 4 (docs/TODO.md); this file is what it will be poured into.
+// The conversation runs one of two ways, and looks the same either way. With
+// an engine at the edge (a key is set and the day is not spent) the site's
+// turns are streamed from the model through /session and /turn, and poured
+// into the same typist. With no engine — and whenever the wire fails mid
+// sentence — the scripted bank below runs instead, from wherever the
+// conversation had reached. A visitor never meets a dead page.
 
 // What the Worker knew about the reader, read once, not concatenated into code.
 const EDGE = JSON.parse(document.getElementById('edge').dataset.edge);
+const ENGINE = EDGE.engine === true;
 
 // ============================================================================
 // the human typist
@@ -136,8 +141,14 @@ setTimeout(() => {
 // ============================================================================
 // II · the sentence
 // ============================================================================
+// The sentence the visitor composes, kept as they compose it: it is the whole
+// of what the edge is told about them, and the only thing /session is given.
+let trade = null;
+const frictions = [];
+
 document.querySelectorAll('#bizChoices .pick').forEach((b) => {
   b.addEventListener('click', () => {
+    trade = b.textContent;
     const wrap = document.getElementById('bizChoices');
     wrap.querySelectorAll('.sep').forEach((s) => {
       s.remove();
@@ -174,6 +185,8 @@ document.querySelectorAll('#frictionChoices .pick').forEach((b) => {
   b.addEventListener('click', () => {
     const on = b.classList.toggle('set');
     picked += on ? 1 : -1;
+    if (on) frictions.push(b.textContent);
+    else frictions.splice(frictions.indexOf(b.textContent), 1);
     document.getElementById('period2').style.display = picked > 0 ? 'inline' : 'none';
     if (picked > 0 && !closing) {
       closing = true;
@@ -195,7 +208,7 @@ document.querySelectorAll('#frictionChoices .pick').forEach((b) => {
 });
 
 // ============================================================================
-// III · the session — scripted here; streamed from the edge in the real build
+// III · the session — the scripted bank, and the machinery both paths share
 // ============================================================================
 const galley = document.getElementById('galley');
 const setting = document.getElementById('setting');
@@ -406,33 +419,219 @@ function climax() {
 
 document.getElementById('golink').addEventListener('click', () => {
   document.getElementById('golink').style.visibility = 'hidden';
-  calibrate();
+  if (ENGINE) openSession();
+  else calibrate();
 });
 
 function finale() {
   setType(
     'site',
     'That is enough to see it — the hours, and the larger thing beneath them. Being early is not a slogan; wired into the actual grain of a shop, it is a <em>working advantage,</em> and it is what I do. Hold still. I am going to set you a letter.',
-    () => {
-      const a4 = document.getElementById('act4');
-      a4.style.display = 'grid';
-      // (act4 is the letter — the only remaining hard rule in the scroll)
-      let d = 0;
-      a4.querySelectorAll('.setin').forEach((elm) => {
-        elm.classList.add('in');
-        elm.style.animationDelay = d + 's';
-        d += 0.28;
-      });
-      a4.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      setTimeout(
-        () => {
-          const ask = document.getElementById('ask');
-          ask.classList.add('on');
-        },
-        d * 1000 + 600,
-      );
-    },
+    () => revealLetter(),
   );
+}
+
+// The letter, and the ask under it. Reached from the scripted finale and from
+// the streamed one alike — whoever spoke the last line, the reveal is the same.
+function revealLetter() {
+  const a4 = document.getElementById('act4');
+  a4.style.display = 'grid';
+  // (act4 is the letter — the only remaining hard rule in the scroll)
+  let d = 0;
+  a4.querySelectorAll('.setin').forEach((elm) => {
+    elm.classList.add('in');
+    elm.style.animationDelay = d + 's';
+    d += 0.28;
+  });
+  a4.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  setTimeout(
+    () => {
+      const ask = document.getElementById('ask');
+      ask.classList.add('on');
+    },
+    d * 1000 + 600,
+  );
+}
+
+// ============================================================================
+// III·b · the engine — the same conversation, improvised at the edge
+// ============================================================================
+// Nothing below invents a visual. The stream is poured into the same word
+// press setType uses, the choices go through the same offerChips, a free
+// answer goes to the same desk, and the letter is revealed by the same
+// function the scripted finale calls. What changes is only who writes.
+
+let token = null;
+let stage = null; // the last stage the edge said it had spoken
+let conversation = null; // the Nº, so an address left below joins this work
+
+// Where the scripted bank picks up if the wire goes quiet. Same arc, same
+// order; the branch at calibration reads their answer the way the edge does.
+function scriptedFrom(said) {
+  if (stage === null) return calibrate();
+  if (stage === 'calibrate') {
+    if (/don't know|do not know|no idea|nothing|never/i.test(said || '')) return explain();
+    level = level || 'nodded';
+    return teach();
+  }
+  if (stage === 'explain') {
+    level = 'new';
+    return teach();
+  }
+  if (stage === 'teach') return idea1();
+  if (stage === 'idea1') return idea2();
+  if (stage === 'idea2') return climax();
+  if (stage === 'climax') return finale();
+  return revealLetter();
+}
+
+// The word press, fed a word at a time as the stream arrives rather than all
+// at once. Same cadence as setType: a breath after a comma, a longer one now
+// and then, and the setting-type indicator until the first word lands.
+function wordPress() {
+  setting.style.display = 'block';
+  setting.scrollIntoView({ behavior: 'smooth', block: 'end' });
+
+  let turnEl = null;
+  let txt = null;
+  let buffer = '';
+  const queue = [];
+  let timer = null;
+  let closed = false;
+  let then = null;
+
+  function pump() {
+    if (!queue.length) {
+      timer = null;
+      if (closed && then) {
+        const done = then;
+        then = null;
+        setTimeout(done, 500);
+      }
+      return;
+    }
+    if (!turnEl) {
+      setting.style.display = 'none';
+      turnEl = addTurn('site', '');
+      txt = turnEl.querySelector('.txt');
+    }
+    const w = queue.shift();
+    const s = document.createElement('span');
+    s.className = 'press-word';
+    s.style.animationDelay = '0ms';
+    s.innerHTML = w + '&nbsp;';
+    txt.appendChild(s);
+    let wait = 75 + Math.random() * 55;
+    if (/[,—.?]>?$/.test(w)) wait += 200;
+    if (Math.random() < 0.06) wait += 300 + Math.random() * 320;
+    timer = setTimeout(pump, wait);
+  }
+
+  return {
+    write(text) {
+      buffer += text;
+      const parts = buffer.split(' ');
+      buffer = parts.pop();
+      for (const p of parts) if (p !== '') queue.push(p);
+      if (!timer) pump();
+    },
+    end(after) {
+      if (buffer.trim()) queue.push(buffer.trim());
+      buffer = '';
+      closed = true;
+      then = after;
+      if (!timer) pump();
+    },
+    // The wire failed. Take back whatever half-line arrived and let the
+    // scripted bank say the whole thing properly.
+    abandon() {
+      queue.length = 0;
+      if (timer) clearTimeout(timer);
+      timer = null;
+      if (turnEl) turnEl.remove();
+      setting.style.display = 'none';
+    },
+  };
+}
+
+// One exchange. `said` is their chip or their typed line; empty opens the
+// conversation, because the sentence they composed is already at the edge.
+async function turn(said) {
+  const press = wordPress();
+  let ended = null;
+  try {
+    const r = await fetch('/turn', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ token: token, said: said }),
+    });
+    if (!r.ok || !r.body) throw new Error('the wire refused');
+    const reader = r.body.getReader();
+    const dec = new TextDecoder();
+    let buf = '';
+    for (;;) {
+      const step = await reader.read();
+      if (step.done) break;
+      buf += dec.decode(step.value, { stream: true });
+      let cut = buf.indexOf('\n\n');
+      while (cut >= 0) {
+        const block = buf.slice(0, cut);
+        buf = buf.slice(cut + 2);
+        let name = '';
+        let data = '';
+        for (const line of block.split('\n')) {
+          if (line.startsWith('event:')) name = line.slice(6).trim();
+          else if (line.startsWith('data:')) data += line.slice(5).trim();
+        }
+        if (name === 'token' && data) press.write(JSON.parse(data).text);
+        else if (name === 'turn' && data) ended = JSON.parse(data);
+        cut = buf.indexOf('\n\n');
+      }
+    }
+    if (!ended) throw new Error('the turn was never closed');
+  } catch {
+    press.abandon();
+    scriptedFrom(said);
+    return;
+  }
+
+  stage = ended.stage;
+  if (ended.level) level = ended.level;
+  press.end(() => {
+    if (ended.done) revealLetter();
+    else if (ended.chips?.length) {
+      offerChips(ended.chips, (pick) => {
+        addTurn('you', pick);
+        turn(pick);
+      });
+    } else askText((val) => turn(val));
+  });
+}
+
+// The investment gate: the first request of the whole piece, and it carries
+// the sentence they made rather than anything about them.
+async function openSession() {
+  let started = null;
+  try {
+    const r = await fetch('/session', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ trade: trade, frictions: frictions }),
+    });
+    if (r.ok) started = await r.json();
+  } catch {
+    started = null;
+  }
+  // No engine, a refusal, or no wire at all: the scripted bank, from the top.
+  if (!started?.engine || !started.token) {
+    calibrate();
+    return;
+  }
+  token = started.token;
+  conversation = started.conversation ?? null;
+  turn('');
 }
 
 // ============================================================================
@@ -545,6 +744,9 @@ askForm.addEventListener('submit', async (e) => {
   const body = new URLSearchParams();
   body.set('email', askForm.querySelector('input[name="email"]').value);
   body.set('website', askForm.querySelector('input[name="website"]').value);
+  // The Nº, when there was a conversation to have one. The desk sorts a
+  // missing or stale one; the address is never lost over it.
+  if (conversation !== null) body.set('conversation', String(conversation));
 
   let said = null;
   try {
