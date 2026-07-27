@@ -24,11 +24,19 @@ for the piece itself). The brochure stays live until the app replaces it.
       stops serving rather than degrading when caps hit. (The session Durable
       Object is SQLite-backed, so it would run on the free plan; nothing else
       would.)
-- [ ] **Two secrets, by hand, before the first deploy that talks to a model:**
-      `wrangler secret put SESSION_SECRET` (signs the presence token) and
-      `wrangler secret put ANTHROPIC_API_KEY`. Without the key the Worker still
-      serves the whole piece on its scripted conversation and spends nothing —
-      which is the right way to deploy it first and watch it.
+- [ ] **Four secrets, by hand.** Two before the first deploy that talks to a
+      model: `wrangler secret put SESSION_SECRET` (signs the presence token
+      *and* the desk cookie) and `wrangler secret put ANTHROPIC_API_KEY`.
+      Without the key the Worker still serves the whole piece on its scripted
+      conversation and spends nothing — which is the right way to deploy it
+      first and watch it. Two more before the desk is any use:
+      `ADMIN_SECRET` and `MCP_SECRET`, already set on the deployed Worker.
+      Both are required strings in `Env`: a Worker deployed without them will
+      typecheck and then answer every desk address with the miss, which is
+      the safe failure but is indistinguishable from a working door.
+      Keep the copies at `~/.config/cloudflare/gmr-admin.secret` and
+      `~/.config/cloudflare/gmr-mcp.secret`, mode 0600, never printed
+      (`portals/docs/cloudflare-access.md`).
 - [ ] **Before the next deploy, by hand** (steps 5–6 added three things the
       remote account does not have yet):
       - `pnpm wrangler d1 migrations apply gmr --remote` — migration 0002
@@ -42,6 +50,15 @@ for the piece itself). The brochure stays live until the app replaces it.
         no console step — but it only starts firing once the Worker is
         deployed with it, and 09:00 UTC is three in the morning in Bozeman.
         Watch the first run in Workers Logs.
+- [ ] **A browser smoke of the desk**, against `wrangler dev`: open
+      `/desk?key=…` once, confirm the address cleans itself and the cookie
+      holds across a reload, and that the ledger and a lead are set on the
+      house measure with the fonts and rules the piece uses. There is no
+      client JS on either page, so this is a look and not a debugging
+      session — but nobody has looked at it in a browser yet.
+- [ ] **Attach the MCP server and work a week through it.** The command is
+      at the head of `src/mcp.ts`. Then Gmail beside it, which is the whole
+      point (CLAUDE.md § CRM).
 - [ ] **A browser smoke of the letter**, against `wrangler dev` with a live
       key: walk the arc to the finale and confirm the real letter replaces
       the scripted act, that the plum keep-line links to the magic address,
@@ -78,9 +95,18 @@ for the piece itself). The brochure stays live until the app replaces it.
 - [x] 6. The record: aggregation + public page, live from conversation Nº 1.
       `/record` in the house measure, honest zeros, and the scroll's record
       fork now carries real tallies from the edge instead of mock numbers.
-- [ ] 7. The desk + MCP: admin-gate organ copied from portals, thin ledger
-      view, MCP server at `/mcp` (resolve the OAuth-shim question for Claude
-      Desktop here), connect alongside Gmail.
+- [x] 7. The desk + MCP: admin-gate organ copied from portals, thin ledger
+      view, MCP server at `/mcp`, connect alongside Gmail.
+      `/desk` opens for `Authorization: Bearer <ADMIN_SECRET>` or for the
+      HMAC cookie `GET /desk?key=…` mints (thirty days, `Path=/desk`, so no
+      visitor ever receives one); everything else — wrong bearer, wrong key,
+      forged or stale cookie, any POST — gets the house miss byte for byte.
+      `/mcp` is a hand-rolled stateless Streamable-HTTP server: five tools,
+      no SDK, no new dependencies, bearer `MCP_SECRET`, the same invisible
+      404. The OAuth-shim question resolved itself — Claude Code attaches an
+      HTTP server with a plain `Authorization` header, so no shim is needed;
+      if a client that requires OAuth is ever wanted, that is its own step.
+      Still owed: attaching it for real and watching a week go through it.
 - [ ] 8. Launch: domain bound, Zola retired, brochure URL becomes the piece.
 
 ## Before first client

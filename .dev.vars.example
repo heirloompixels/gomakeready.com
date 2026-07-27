@@ -1,12 +1,23 @@
 # gmr — local secrets. Copy to .dev.vars (gitignored) before `make dev`.
 #
-# In production these are `wrangler secret put SESSION_SECRET` and
-# `wrangler secret put ANTHROPIC_API_KEY`, set by hand like the deploys.
+# In production these are `wrangler secret put …`, set by hand like the
+# deploys. Real ones live in ~/.config/cloudflare (mode 0600) and are never
+# printed.
 
-# Signs the presence token minted when the sentence on-ramp completes.
-# Any string will do locally; production's is long and random and lives only
-# in Cloudflare's secret store.
+# Signs the presence token minted when the sentence on-ramp completes, and
+# the desk's cookie. Any string will do locally; production's is long and
+# random and lives only in Cloudflare's secret store.
 SESSION_SECRET=dev-not-a-secret
+
+# The desk. This one secret is the whole admin identity — presented as
+# `Authorization: Bearer …`, or once at /desk?key=… to mint the cookie.
+# Anything that does not hold it gets the house miss and never learns a door
+# was there.
+ADMIN_SECRET=dev-not-a-secret-desk
+
+# The machine door at /mcp — the bearer token the MCP connector carries.
+# Separate from ADMIN_SECRET on purpose: either may be rotated alone.
+MCP_SECRET=dev-not-a-secret-mcp
 
 # Left empty on purpose. Empty means no engine: the page runs its scripted
 # conversation, exactly as it did before step 4, and nothing costs anything.

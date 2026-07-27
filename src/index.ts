@@ -10,9 +10,11 @@ import { exportArchive } from './archive';
 import { handleAsk } from './ask';
 import { engineOn, handleSession, handleTurn } from './converse';
 import { recordAggregates } from './db';
+import { deskGate, deskLead, deskLedger, deskNote, deskStatus } from './desk';
 import { edgeGreeting, type Where } from './greeting';
 import { guardHeaders } from './headers';
 import { handleLetter } from './letter';
+import { handleMcp, mcpNotAllowed } from './mcp';
 import { record } from './record';
 import { scroll } from './scroll';
 import type { Env } from './types';
@@ -102,6 +104,31 @@ app.post('/ask', (c) => handleAsk(c.env, c.req.raw));
 // either is a miss like any other (src/converse.ts).
 app.post('/session', (c) => handleSession(c.env, c.req.raw));
 app.post('/turn', (c) => handleTurn(c.env, c.req.raw));
+
+// ————— the desk
+//
+// The gate is registered before the addresses it guards, because Hono
+// composes in registration order and a middleware written after its route is
+// a middleware that never runs. Both patterns are needed: '/desk' is the
+// ledger itself and '/desk/*' is everything under it. Nothing below is
+// reachable without it, and the gate — not the router's notFound — is what
+// answers a wrong hand, with the identical sentence (src/desk.ts).
+app.use('/desk', deskGate);
+app.use('/desk/*', deskGate);
+
+app.on(READ, '/desk', (c) => deskLedger(c.env));
+app.on(READ, '/desk/lead/:id', (c) => deskLead(c.env, c.req.param('id')));
+app.post('/desk/lead/:id/status', (c) => deskStatus(c.env, c.req.raw, c.req.param('id')));
+app.post('/desk/lead/:id/note', (c) => deskNote(c.env, c.req.raw, c.req.param('id')));
+
+// ————— the machine door
+//
+// The same desk for the interface Kyle actually uses. Its gate is inside the
+// handler rather than a middleware, because the door has exactly one address
+// and one method (src/mcp.ts). A GET is 405 with `Allow: POST` — there is no
+// stream to open here — and everything else without the bearer is the miss.
+app.on(READ, '/mcp', () => mcpNotAllowed());
+app.post('/mcp', (c) => handleMcp(c.env, c.req.raw));
 
 // ————— the cron
 //

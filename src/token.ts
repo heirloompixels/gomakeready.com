@@ -35,7 +35,15 @@ const b64url = (buf: ArrayBuffer): string =>
     .replace(/\//g, '_')
     .replace(/=+$/, '');
 
-async function sign(payload: string, secret: string): Promise<string> {
+// Exported because the desk's cookie is signed by the same hand with the same
+// secret (src/desk.ts). Three uses prove a pattern — the house rule is copy
+// from *portals* until then, not copy from the file next door, and a second
+// transcription of eight lines of WebCrypto inside one repo is how the two
+// copies quietly stop agreeing. What keeps the two signatures from being
+// mistaken for one another is the payload, not the key: a presence token
+// signs `sid.cid.exp` and the desk cookie signs `desk.exp`, and neither
+// reader will parse the other's shape.
+export async function sign(payload: string, secret: string): Promise<string> {
   const key = await hmacKey(secret);
   return b64url(await crypto.subtle.sign('HMAC', key, enc.encode(payload)));
 }
@@ -68,7 +76,7 @@ export async function mintToken(
 // Length-independent comparison. The signature is the whole of the guard, so
 // it is compared in constant time for its length: an attacker learns how long
 // their own guess was and nothing else.
-function sameSig(a: string, b: string): boolean {
+export function sameSig(a: string, b: string): boolean {
   if (a.length !== b.length) return false;
   let diff = 0;
   for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);

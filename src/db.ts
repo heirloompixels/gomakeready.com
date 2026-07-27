@@ -324,6 +324,75 @@ export async function setLeadStatus(
     .first<LeadRow>();
 }
 
+// ————— the desk's ledger
+//
+// A lead's town, trade and level are properties of the conversation it came
+// out of, so the desk's index is one join and not a hundred round trips. The
+// join is LEFT because a lead may have no conversation at all: an address
+// left by someone who read to the bottom and never spoke is a real lead with
+// unset facts, exactly as a conversation that ended early is a real work with
+// unset facts.
+
+export interface LeadLine extends LeadRow {
+  town: string | null;
+  trade: string | null;
+  level: Level | null;
+}
+
+export interface LedgerQuery {
+  status?: LeadStatus;
+  /** Unix seconds. Leads left at or after this moment. */
+  since?: number;
+  limit?: number;
+}
+
+export async function leadLines(db: D1Database, q: LedgerQuery = {}): Promise<LeadLine[]> {
+  const where: string[] = [];
+  const binds: (string | number)[] = [];
+  if (q.status !== undefined) {
+    where.push('l.status = ?');
+    binds.push(q.status);
+  }
+  if (q.since !== undefined) {
+    where.push('l.created_at >= ?');
+    binds.push(q.since);
+  }
+  let sql =
+    'SELECT l.*, c.town AS town, c.trade AS trade, c.level AS level' +
+    ' FROM leads l LEFT JOIN conversations c ON c.id = l.conversation_id';
+  if (where.length > 0) sql += ' WHERE ' + where.join(' AND ');
+  sql += ' ORDER BY l.created_at DESC, l.id DESC';
+  if (q.limit !== undefined) {
+    sql += ' LIMIT ?';
+    binds.push(q.limit);
+  }
+  const { results } = await db
+    .prepare(sql)
+    .bind(...binds)
+    .all<LeadLine>();
+  return results;
+}
+
+/** The three numbers the desk sets above its ledger. */
+export interface DeskCounts {
+  fresh: number; // addresses left since the moment asked about
+  letters: number; // letters set, all time
+  booked: number; // leads standing at 'booked' — the hours actually sold
+}
+
+export async function deskCounts(db: D1Database, since: number): Promise<DeskCounts> {
+  const [fresh, letters, booked] = await db.batch<{ n: number }>([
+    db.prepare('SELECT COUNT(*) AS n FROM leads WHERE created_at >= ?').bind(since),
+    db.prepare('SELECT COUNT(*) AS n FROM letters'),
+    db.prepare("SELECT COUNT(*) AS n FROM leads WHERE status = 'booked'"),
+  ]);
+  return {
+    fresh: fresh.results[0]?.n ?? 0,
+    letters: letters.results[0]?.n ?? 0,
+    booked: booked.results[0]?.n ?? 0,
+  };
+}
+
 // ————— notes (append-only)
 
 export async function addNote(db: D1Database, leadId: number, body: string): Promise<NoteRow> {
@@ -401,6 +470,15 @@ export async function letterByKeyHash(db: D1Database, keyHash: string): Promise<
 // constant time, by the door (src/letter.ts § handleLetter).
 export async function letterByNumber(db: D1Database, number: number): Promise<LetterRow | null> {
   return db.prepare('SELECT * FROM letters WHERE number = ?').bind(number).first<LetterRow>();
+}
+
+// What has been set lately — the digest's own question. Newest first.
+export async function lettersSince(db: D1Database, at: number): Promise<LetterRow[]> {
+  const { results } = await db
+    .prepare('SELECT * FROM letters WHERE created_at >= ? ORDER BY number DESC')
+    .bind(at)
+    .all<LetterRow>();
+  return results;
 }
 
 export async function lettersFor(db: D1Database, conversationId: number): Promise<LetterRow[]> {

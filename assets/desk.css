@@ -1,0 +1,91 @@
+/* The desk. Loaded after brand.css and scroll.css, and it adds only what a
+   ledger needs that the piece did not: a stat row, a table, a margin.
+
+   Two names are already spoken for by the scroll and must not be reused
+   here: `.desk` is the scroll's email band (display:none until the arc
+   reaches it), and `.ledger` is the record's Garamond list. The page's own
+   wrapper is `.deskwrap` and its table is `.rows`, for that reason.
+
+   Mockup 04's spirit, thinner: the two-pane detail became its own address,
+   because a desk that needs client JavaScript to open a lead is a desk with
+   a build step. There is no script on this page at all. */
+
+.deskwrap{padding-top:50px;padding-bottom:20px}
+
+.deskhead{display:flex;justify-content:space-between;align-items:baseline;gap:24px;
+  flex-wrap:wrap;border-bottom:1.5px solid var(--ink);padding-bottom:18px}
+.deskhead h1{font-family:'EB Garamond',serif;font-weight:500;font-size:clamp(26px,4vw,46px);
+  letter-spacing:-.012em;margin:0;overflow-wrap:anywhere}
+.deskhead h1 em{font-style:italic;color:var(--plum)}
+
+.stats{display:flex;gap:34px;flex-wrap:wrap;align-items:baseline}
+.stat .n{font-family:'EB Garamond',serif;font-weight:600;font-size:30px;color:var(--ink);line-height:1}
+.stat .n.p{color:var(--plum)}
+.stat .l{font-family:'DM Sans',sans-serif;font-size:10.5px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--grey-light);margin-top:6px}
+.back{font-size:13px;color:var(--plum);text-decoration:none;
+  border-bottom:1px solid transparent}
+.back:hover{border-bottom-color:var(--plum)}
+
+.util{font-family:'DM Sans',sans-serif}
+.quietnote{font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.7;color:var(--grey);
+  max-width:60ch;margin:14px 0 0}
+
+/* the ledger */
+.rows{width:100%;border-collapse:collapse;margin-top:26px;
+  font-family:'DM Sans',sans-serif;font-size:14px}
+.rows th{text-align:left;font-size:10.5px;font-weight:500;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--grey-light);padding:0 16px 10px 0;
+  border-bottom:1px solid var(--ink);white-space:nowrap}
+.rows th .d{color:var(--plum)}
+.rows td{padding:13px 16px 13px 0;border-bottom:1px dotted var(--rule);
+  color:var(--grey);vertical-align:baseline}
+.rows tr:hover td{background:var(--paper-2)}
+.rows td.num{font-family:'EB Garamond',serif;font-size:18px;font-weight:600;white-space:nowrap}
+.rows td.num a{color:var(--ink);text-decoration:none;border-bottom:1.5px solid var(--rule)}
+.rows td.num a:hover{color:var(--plum);border-bottom-color:var(--plum)}
+
+.status{display:inline-block;font-size:10.5px;font-weight:500;letter-spacing:.14em;
+  text-transform:uppercase;padding:3px 9px;border:1.2px solid var(--rule);color:var(--grey)}
+.status.new{border-color:var(--plum);color:var(--plum)}
+.status.booked,.status.client{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.status.closed{color:var(--grey-light)}
+
+/* the panes: facts, letter, margin, transcript */
+.pane{border-top:1px solid var(--rule);padding:26px 0 4px;margin-top:26px}
+.pane:first-of-type{border-top:0}
+.pane .k{color:var(--plum);margin-bottom:14px}
+.pane .k .d{color:var(--grey-light)}
+
+.fact{display:flex;justify-content:space-between;gap:20px;max-width:640px;
+  font-family:'DM Sans',sans-serif;font-size:13.5px;color:var(--grey);
+  padding:9px 0;border-bottom:1px dotted var(--rule)}
+.fact b{color:var(--ink);font-weight:500;text-align:right;overflow-wrap:anywhere}
+
+.acts{display:flex;gap:12px;flex-wrap:wrap;align-items:stretch}
+.acts form{display:flex;gap:10px;flex-wrap:wrap}
+.acts select{font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);
+  background:var(--paper-2);border:1.5px solid var(--ink);padding:12px 14px}
+
+.notes{list-style:none;margin:0 0 22px;padding:0;max-width:64ch}
+.notes li{font-family:'DM Sans',sans-serif;font-size:14.5px;line-height:1.65;color:var(--ink);
+  padding:12px 0;border-bottom:1px dotted var(--rule);white-space:pre-wrap}
+.notes .when{display:block;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--grey-light);margin-bottom:5px}
+
+.notely{display:flex;flex-direction:column;align-items:flex-start;gap:12px;max-width:64ch}
+.notely textarea{width:100%;font-family:'DM Sans',sans-serif;font-size:14.5px;line-height:1.6;
+  color:var(--ink);background:var(--paper-2);border:1.5px solid var(--ink);padding:13px 15px;
+  resize:vertical}
+.notely textarea::placeholder{color:var(--grey-light);font-style:italic}
+
+/* the transcript reuses .turn from scroll.css; only its label differs here */
+.pane .turn .who{text-transform:none;letter-spacing:.14em}
+.pane .turn .txt{white-space:pre-wrap}
+
+@media(max-width:900px){
+  .deskwrap{padding-top:34px}
+  .rows{font-size:13px}
+  .rows th:nth-child(4),.rows td:nth-child(4),
+  .rows th:nth-child(5),.rows td:nth-child(5){display:none}
+}

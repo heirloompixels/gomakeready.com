@@ -26,9 +26,19 @@ export interface Env {
   // What the day's model spend may reach before the engine goes quiet, in
   // dollars. A var, so raising it is a deploy flag and not a build.
   DAILY_CAP_USD: string;
-  // Signs the presence token. `wrangler secret put SESSION_SECRET`; locally
-  // it comes from .dev.vars (see .dev.vars.example).
+  // Signs the presence token, and the desk's cookie. `wrangler secret put
+  // SESSION_SECRET`; locally it comes from .dev.vars (see .dev.vars.example).
   SESSION_SECRET: string;
+  // The single secret behind the desk — the whole of the admin identity, with
+  // no accounts and no passwords (CLAUDE.md § CRM). It is presented either as
+  // `Authorization: Bearer …` or once at `/desk?key=…`, which mints the
+  // cookie. Required, not optional: a desk whose gate could be undefined is a
+  // desk that could open for the empty string.
+  ADMIN_SECRET: string;
+  // The same idea for the machine door at /mcp — a separate secret, so the
+  // connector Kyle hands to Claude cannot also open the browser desk, and
+  // either can be rotated without touching the other.
+  MCP_SECRET: string;
   // `wrangler secret put ANTHROPIC_API_KEY`. Absent — as it is in dev and in
   // the test suite unless a test says otherwise — the page keeps its scripted
   // conversation and no model is ever called.
