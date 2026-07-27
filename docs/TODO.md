@@ -37,19 +37,10 @@ for the piece itself). The brochure stays live until the app replaces it.
       Keep the copies at `~/.config/cloudflare/gmr-admin.secret` and
       `~/.config/cloudflare/gmr-mcp.secret`, mode 0600, never printed
       (`portals/docs/cloudflare-access.md`).
-- [ ] **Before the next deploy, by hand** (steps 5–6 added three things the
-      remote account does not have yet):
-      - `pnpm wrangler d1 migrations apply gmr --remote` — migration 0002
-        adds `hours_low` / `hours_high` to `letters`. Additive; nothing is
-        altered or dropped. Apply it *before* the deploy, not after: a
-        Worker on 0002's code against 0001's schema cannot set a letter.
-      - The R2 bucket `gmr-archive` must exist on the analogkyle account
-        (`pnpm wrangler r2 bucket create gmr-archive`). The binding is
-        `ARCHIVE`.
-      - `triggers.crons: ["0 9 * * *"]` is registered by the deploy itself —
-        no console step — but it only starts firing once the Worker is
-        deployed with it, and 09:00 UTC is three in the morning in Bozeman.
-        Watch the first run in Workers Logs.
+- [x] Remote account provisioned (overnight 2026-07-27): migrations 0001+0002
+      applied, R2 bucket `gmr-archive` created, cron registered with the
+      deploy, all three secrets put (newline-stripped). Watch the first cron
+      run in Workers Logs — 09:00 UTC is three in the morning in Bozeman.
 - [ ] **A browser smoke of the desk**, against `wrangler dev`: open
       `/desk?key=…` once, confirm the address cleans itself and the cookie
       holds across a reload, and that the ledger and a lead are set on the
@@ -73,10 +64,10 @@ for the piece itself). The brochure stays live until the app replaces it.
 
 - [x] 1. Bank the design: mockups 01–05, CLAUDE.md rewritten to the new law,
       this TODO.
-- [ ] 2. Scaffold the Workers app: pnpm, Hono, strict tsconfig, Biome,
+- [x] 2. Scaffold the Workers app: pnpm, Hono, strict tsconfig, Biome,
       `wrangler.jsonc` (account pinned, observability), vitest-pool-workers,
       `/_health`, Makefile targets, first deploy to workers.dev.
-- [ ] 3. Port the piece: scroll served from `hono/html`, edge greeting from
+- [x] 3. Port the piece: scroll served from `hono/html`, edge greeting from
       `request.cf` (city + timezone), fonts self-hosted (subset the variable
       TTFs already in `print/fonts/`), typist as client script.
 - [x] 4. The conversation engine: session Durable Object (presence token,
