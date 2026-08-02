@@ -4,10 +4,10 @@
   // until D1 and the session DO land (docs/TODO.md § 4–5).
   "name": "gmr",
   // Pinned so a stray CLOUDFLARE_ACCOUNT_ID or a second logged-in account
-  // can't deploy this somewhere else. Analogkyle's account — gomakeready.com
-  // is assigned there; the default OAuth login points at old snow and gets
+  // can't deploy this somewhere else. The TorC account — the consolidated
+  // home (2026-08-02); the default OAuth login points at old snow and gets
   // it wrong silently (CLAUDE.md § Cloudflare account).
-  "account_id": "e31907b848be2fd0a182757d8c938594",
+  "account_id": "0170b714b0ee025091fed8a088f7a65a",
   "main": "src/index.ts",
   "compatibility_date": "2026-07-01",
   // Workers Logs from day one — the piece is a conversation with a wallet
@@ -34,8 +34,9 @@
     {
       "binding": "DB",
       "database_name": "gmr",
-      // created 2026-07-26 via `wrangler d1 create gmr`
-      "database_id": "ebb7f0a8-93c7-4070-b666-604de15a9b82",
+      // created 2026-08-02 on TorC via `wrangler d1 create gmr`
+      // (the old account's copy was ebb7f0a8-…; migrated by SQL dump)
+      "database_id": "75d9dd6b-42b3-4911-8d77-6ba66ae24809",
       "migrations_dir": "migrations"
     }
   ],
@@ -45,7 +46,9 @@
   "kv_namespaces": [
     {
       "binding": "SPEND",
-      "id": "3a301b26900d4813869896e28c5d84f3"
+      // recreated 2026-08-02 on TorC (old account's was 3a301b26…; the
+      // tally was empty at the move, so nothing was copied)
+      "id": "3e68fce6b1e44adda4180aa468971999"
     }
   ],
   // One live conversation each: the stage cursor, the exchange count, the
