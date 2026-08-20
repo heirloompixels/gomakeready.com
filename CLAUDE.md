@@ -5,7 +5,7 @@ remember the old rules — static Zola, no JS, GitHub Pages — forget them;
 they served the brochure, and the brochure is over.
 
 This repo follows the **house infrastructure style** defined in
-`/Users/kpc/www/portals/CLAUDE.md` (which names gmr as a proving ground for
+`/Users/kpc/machinery/portals/CLAUDE.md` (which names gmr as a proving ground for
 it). Where this file is silent on tooling or Cloudflare matters, portals'
 conventions and its `docs/cloudflare-access.md` / `docs/cloudflare-costs.md`
 are the law here too.
@@ -236,3 +236,17 @@ Deploys are a hand, and they carry the sha:
 ```
 pnpm wrangler deploy --var COMMIT:$(git rev-parse --short HEAD)
 ```
+
+## Sessions end with a PR
+
+A branch is not a deliverable. Before ending any session — web or local:
+
+- Push the work. A `claude/*` branch push opens a draft PR by itself
+  (`.github/workflows/claude-branch-pr.yml`); for any other branch, open
+  the PR yourself. If the work was committed straight to main, push main.
+- Say in the handoff where the work now lives: the PR number, or the main
+  push.
+- Merged branches delete themselves on GitHub; do not resurrect one.
+
+The PR list is the inbox. Work that ends a session without a PR or a
+pushed main strands invisibly.
