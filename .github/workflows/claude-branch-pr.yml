@@ -5,6 +5,13 @@
 # Known limit: a PR opened by this workflow's own token does not trigger
 # the pull_request CI run. Checks appear on the next human push to the
 # branch, or when the PR is marked ready for review.
+#
+# Requires "Allow GitHub Actions to create and approve pull requests" —
+# Settings -> Actions -> General -> Workflow permissions, or the API field
+# can_approve_pull_request_reviews. It is off by default, and while it was
+# off this workflow could not open anything: from 2026-08-20 to 2026-08-21
+# every run reported success and created no PR. Do not add a `|| echo`
+# fallback to the step below again; a PR that failed to open must be red.
 name: claude-branch-pr
 
 on:
@@ -33,5 +40,4 @@ jobs:
           title=$(gh api "repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA" --jq '.commit.message' | head -1)
           gh pr create --repo "$GITHUB_REPOSITORY" --head "$BRANCH" --draft \
             --title "$title" \
-            --body "Opened automatically: a Claude session pushed this branch. Review, then merge or close. (claude-branch-pr workflow)" \
-            || echo "no PR created (branch may have no commits ahead of main)"
+            --body "Opened automatically: a Claude session pushed this branch. Review, then merge or close. (claude-branch-pr workflow)"
