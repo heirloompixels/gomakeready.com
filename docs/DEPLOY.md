@@ -11,7 +11,7 @@ The site is built and deployed automatically to GitHub Pages using GitHub Action
 
 ## Custom Domain Configuration
 
-The [static/CNAME](file:///Users/kpc/www/gmr/static/CNAME) file has been configured with `gomakeready.com`. This tells GitHub Pages to route the domain correctly.
+The [static/CNAME](file:///Users/kpc/machinery/ventures/gmr/static/CNAME) file has been configured with `gomakeready.com`. This tells GitHub Pages to route the domain correctly.
 
 ### DNS Records
 
