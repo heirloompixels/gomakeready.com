@@ -196,8 +196,9 @@ again.*
 
 ## Working agreement
 
-- Brainstorm in text first — Kyle wants conversation and minimal mockups
-  before real builds. Don't jump to implementation.
+- **Act, then show.** When Kyle asks for something, do it and show him the
+  result; he says when he wants to talk it through first (Kyle, 2026-10-23:
+  "i'll ask to chat when i want to").
 - Small, reviewable commits; typecheck and tests green before a step is
   done.
 
